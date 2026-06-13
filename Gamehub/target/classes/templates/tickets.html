@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mis Tickets</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --success:#22c55e;
+            --danger:#ef4444;
+            --warning:#f59e0b;
+            --text:#e8eaf6;
+            --muted:#8b92b0;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--navy);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+        }
+
+        .navbar{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:1.5rem 3rem;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                rgba(0,0,0,.2);
+        }
+
+        .logo{
+
+            font-family:'Syne';
+            font-size:1.8rem;
+            font-weight:800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    white,
+                    var(--accent)
+                );
+
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:
+                transparent;
+        }
+
+        .btn-back{
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:.8rem 1.4rem;
+
+            background:var(--accent);
+
+            color:white;
+        }
+
+        .container{
+
+            max-width:1200px;
+            margin:auto;
+
+            padding:3rem;
+        }
+
+        h1{
+
+            font-family:'Syne';
+            margin-bottom:2rem;
+        }
+
+        .ticket-form{
+
+            background:var(--card);
+
+            border:1px solid var(--border);
+
+            border-radius:20px;
+
+            padding:2rem;
+
+            margin-bottom:2rem;
+
+            display:flex;
+            flex-direction:column;
+
+            gap:1rem;
+        }
+
+        input,textarea{
+
+            background:var(--panel);
+
+            border:1px solid var(--border);
+
+            color:var(--text);
+
+            border-radius:14px;
+
+            padding:1rem;
+
+            font-family:'DM Sans';
+        }
+
+        textarea{
+
+            resize:none;
+            min-height:120px;
+        }
+
+        .btn-primary{
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:1rem;
+
+            background:var(--accent);
+
+            color:white;
+
+            font-weight:700;
+        }
+
+        .tickets-grid{
+
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+
+        .ticket-card{
+
+            background:var(--card);
+
+            border:1px solid var(--border);
+
+            border-radius:20px;
+
+            padding:1.5rem;
+        }
+
+        .ticket-header{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            margin-bottom:1rem;
+        }
+
+        .badge{
+
+            padding:.4rem .9rem;
+            border-radius:999px;
+            font-weight:700;
+        }
+
+        .abierto{
+            background:rgba(79,110,247,.15);
+            color:var(--accent);
+        }
+
+        .proceso{
+            background:rgba(245,158,11,.15);
+            color:var(--warning);
+        }
+
+        .cerrado{
+            background:rgba(34,197,94,.15);
+            color:var(--success);
+        }
+
+        .respuesta{
+
+            margin-top:1rem;
+
+            background:rgba(79,110,247,.08);
+
+            border:1px solid var(--border);
+
+            border-radius:14px;
+
+            padding:1rem;
+        }
+
+        .empty{
+
+            text-align:center;
+
+            color:var(--muted);
+
+            margin-top:3rem;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="logo">
+
+        GAMEHUB
+
+    </div>
+
+    <button
+        class="btn-back"
+        onclick="window.location.href='/dashboard'">
+
+        ← Volver
+
+    </button>
+
+</div>
+
+<div class="container">
+
+    <h1>
+
+        Mis tickets de soporte
+
+    </h1>
+
+    <div class="ticket-form">
+
+        <input
+            id="asunto"
+            placeholder="Asunto del problema">
+
+        <textarea
+            id="mensaje"
+            placeholder="Describe tu problema..."></textarea>
+
+        <button
+            class="btn-primary"
+            onclick="crearTicket()">
+
+            Crear ticket
+
+        </button>
+
+    </div>
+
+    <div
+        id="ticketsGrid"
+        class="tickets-grid">
+
+    </div>
+
+</div>
+
+<script>
+
+async function crearTicket(){
+
+    const asunto =
+        document.getElementById(
+            'asunto'
+        ).value;
+
+    const mensaje =
+        document.getElementById(
+            'mensaje'
+        ).value;
+
+    if(!asunto.trim()
+    || !mensaje.trim()){
+
+        alert(
+            'Completa todos los campos'
+        );
+
+        return;
+    }
+
+    const response =
+        await fetch(
+
+            '/api/tickets?asunto='
+            + encodeURIComponent(asunto)
+            + '&mensaje='
+            + encodeURIComponent(mensaje),
+
+            {
+                method:'POST'
+            }
+        );
+
+    if(response.ok){
+
+        alert(
+            'Ticket creado'
+        );
+
+        document.getElementById(
+            'asunto'
+        ).value='';
+
+        document.getElementById(
+            'mensaje'
+        ).value='';
+
+        cargarTickets();
+    }
+}
+
+async function responderTicket(id){
+
+    const texto =
+        document.getElementById(
+            'respuesta-' + id
+        ).value;
+
+    if(!texto.trim()){
+
+        alert(
+            'Escribe un mensaje'
+        );
+
+        return;
+    }
+
+    await fetch(
+
+        '/api/tickets/usuario/'
+        + id
+        + '?mensaje='
+        + encodeURIComponent(texto),
+
+        {
+            method:'PUT'
+        }
+    );
+
+    cargarTickets();
+}
+
+async function cargarTickets(){
+
+    const response =
+        await fetch(
+            '/api/tickets/mis'
+        );
+
+    const tickets =
+        await response.json();
+
+    const grid =
+        document.getElementById(
+            'ticketsGrid'
+        );
+
+    grid.innerHTML='';
+
+    if(tickets.length===0){
+
+        grid.innerHTML=`
+
+            <div class="empty">
+
+                <h2>
+                    No tienes tickets aún
+                </h2>
+
+                <p>
+                    Cuando necesites ayuda,
+                    aparecerán aquí.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    tickets.forEach(t=>{
+
+        let claseEstado =
+            'abierto';
+
+        if(t.estado==='EN_PROCESO'){
+            claseEstado =
+                'proceso';
+        }
+
+        if(t.estado==='CERRADO'){
+            claseEstado =
+                'cerrado';
+        }
+
+        let mensajesHtml='';
+
+        t.mensajes.forEach(m=>{
+
+            const esSoporte =
+                m.autor === 'Soporte';
+
+				mensajesHtml += `
+
+				    <div style="
+				        margin-top:1rem;
+				        padding:1rem;
+				        border-radius:18px;
+				        border:1px solid var(--border);
+				        background:
+				        ${
+				            esSoporte
+				            ? 'rgba(79,110,247,.12)'
+				            : 'rgba(255,255,255,.04)'
+				        };
+				    ">
+
+				        <div style="
+				            display:flex;
+				            justify-content:space-between;
+				            align-items:center;
+				            margin-bottom:1rem;
+				        ">
+
+				            <strong>
+
+				                ${m.autor}
+
+				            </strong>
+
+				            <span style="
+				                color:#8b92b0;
+				                font-size:.85rem;
+				            ">
+
+				                ${
+				                    new Date(m.fecha)
+				                    .toLocaleString(
+				                        'es-CO',
+				                        {
+				                            dateStyle:'short',
+				                            timeStyle:'short'
+				                        }
+				                    )
+				                }
+
+				            </span>
+
+				        </div>
+
+				        <div>
+
+				            ${m.mensaje}
+
+				        </div>
+
+				    </div>
+
+				`;
+        });
+
+        grid.innerHTML += `
+
+            <div class="ticket-card">
+
+                <div class="ticket-header">
+
+                    <h3>
+
+                        ${t.asunto}
+
+                    </h3>
+
+                    <span
+                        class="badge ${claseEstado}">
+
+                        ${t.estado}
+
+                    </span>
+
+                </div>
+
+                ${mensajesHtml}
+
+                ${
+                    t.estado !== 'CERRADO'
+                    ?
+
+                    `
+
+					<textarea
+					    id="respuesta-${t.id}"
+					    placeholder="Escribe una respuesta..."
+					    style="
+					        width:100%;
+					        margin-top:1.5rem;
+					        background:var(--panel);
+					        border:1px solid var(--border);
+					        color:var(--text);
+					        border-radius:20px;
+					        padding:1.2rem;
+					        min-height:140px;
+					        resize:none;
+					        font-family:'DM Sans';
+					        font-size:1rem;
+					        outline:none;
+					    ">
+
+					</textarea>
+
+					<button
+					    onclick="responder('${t.id}')"
+					    style="
+					        margin-top:1rem;
+					        border:none;
+					        cursor:pointer;
+					        border-radius:14px;
+					        padding:1rem 1.6rem;
+					        background:var(--accent);
+					        color:white;
+					        font-weight:700;
+					        font-size:1rem;
+					    ">
+
+					    Responder
+
+					</button>
+
+                    `
+
+                    :
+
+                    `
+                    <p style="
+                        margin-top:1rem;
+                        color:#8b92b0;
+                    ">
+
+                        Ticket cerrado
+
+                    </p>
+                    `
+                }
+
+            </div>
+        `;
+    });
+}
+
+cargarTickets();
+
+</script>
+
+</body>
+</html>

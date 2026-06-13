@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Videojuegos</title>
+
+    <link rel="stylesheet" href="/css/gamehub.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        *, *::before, *::after{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --accent2:#7c3aed;
+            --danger:#ef4444;
+            --success:#22c55e;
+            --text:#e8eaf6;
+            --muted:#6b7280;
+            --radius:12px;
+        }
+
+        body{
+            background:var(--navy);
+            font-family:'DM Sans', sans-serif;
+            color:var(--text);
+            min-height:100vh;
+            padding:2.5rem;
+        }
+
+        .page-wrapper{
+            max-width:1200px;
+            margin:0 auto;
+        }
+
+        /* TOPBAR */
+
+        .topbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:2rem;
+        }
+
+        .topbar h1{
+            font-family:'Syne', sans-serif;
+            font-size:1.9rem;
+            font-weight:800;
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff 30%,
+                    var(--accent)
+                );
+
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .topbar-buttons{
+            display:flex;
+            gap:.75rem;
+        }
+
+        /* BUTTONS */
+
+        .btn-primary{
+            background:var(--accent);
+            color:#fff;
+            border:none;
+            padding:.7rem 1.3rem;
+            border-radius:var(--radius);
+            cursor:pointer;
+            font-weight:500;
+        }
+
+        .btn-primary:hover{
+            opacity:.85;
+        }
+
+        .btn-cancel{
+            background:var(--border);
+            color:var(--text);
+            border:none;
+            padding:.7rem 1.3rem;
+            border-radius:var(--radius);
+            cursor:pointer;
+        }
+
+        .btn-edit{
+            background:transparent;
+            border:1px solid var(--accent);
+            color:var(--accent);
+            padding:.4rem .8rem;
+            border-radius:8px;
+            cursor:pointer;
+            margin-right:.4rem;
+        }
+
+        .btn-edit:hover{
+            background:var(--accent);
+            color:white;
+        }
+
+        .btn-delete{
+            background:transparent;
+            border:1px solid var(--danger);
+            color:var(--danger);
+            padding:.4rem .8rem;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .btn-delete:hover{
+            background:var(--danger);
+            color:white;
+        }
+
+        /* SEARCH */
+
+        .search-row{
+            display:flex;
+            gap:.75rem;
+            margin-bottom:1.5rem;
+        }
+
+        .search-row input{
+            flex:1;
+            background:var(--card);
+            border:1px solid var(--border);
+            color:var(--text);
+            padding:.8rem 1rem;
+            border-radius:var(--radius);
+        }
+
+        /* TABLE */
+
+        .table-wrap{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            overflow:hidden;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        thead tr{
+            background:var(--panel);
+        }
+
+        th{
+            padding:1rem;
+            text-align:left;
+            font-size:.8rem;
+            text-transform:uppercase;
+            color:var(--muted);
+            font-family:'Syne', sans-serif;
+        }
+
+        td{
+            padding:1rem;
+            border-top:1px solid var(--border);
+        }
+
+        tbody tr:hover{
+            background:
+                rgba(79,110,247,.05);
+        }
+
+        /* GAME CARD CELL */
+
+        .game-cell{
+            display:flex;
+            gap:1rem;
+            align-items:center;
+        }
+
+		.game-thumb{
+		    width:90px;
+		    height:120px;
+		    border-radius:12px;
+		    overflow:hidden;
+		    flex-shrink:0;
+		    background:var(--panel);
+		}
+
+        .game-info h3{
+            font-size:1rem;
+            margin-bottom:.3rem;
+        }
+
+        .game-info p{
+            color:var(--muted);
+            font-size:.85rem;
+        }
+
+        /* BADGES */
+
+        .badge{
+            display:inline-block;
+            padding:.25rem .7rem;
+            border-radius:999px;
+            font-size:.75rem;
+            border:1px solid;
+        }
+
+        .badge-genero{
+            background:
+                rgba(79,110,247,.12);
+
+            color:var(--accent);
+            border-color:
+                rgba(79,110,247,.25);
+        }
+
+        .badge-on{
+            background:
+                rgba(34,197,94,.12);
+
+            color:var(--success);
+            border-color:
+                rgba(34,197,94,.25);
+        }
+
+        .badge-off{
+            background:
+                rgba(239,68,68,.12);
+
+            color:var(--danger);
+            border-color:
+                rgba(239,68,68,.25);
+        }
+
+        /* MODAL */
+
+        .modal{
+            display:none;
+            position:fixed;
+            inset:0;
+            background:
+                rgba(0,0,0,.65);
+
+            justify-content:center;
+            align-items:center;
+            z-index:100;
+        }
+
+        .modal-content{
+            width:450px;
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            padding:2rem;
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+
+        .modal-content h2{
+            font-family:'Syne';
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select{
+
+            width:100%;
+            background:var(--panel);
+            border:1px solid var(--border);
+            color:var(--text);
+            padding:.8rem 1rem;
+            border-radius:var(--radius);
+        }
+
+        textarea{
+            resize:none;
+            height:90px;
+        }
+
+        .modal-buttons{
+            display:flex;
+            justify-content:flex-end;
+            gap:.75rem;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+    <div class="topbar">
+
+        <h1>Gestión de Videojuegos</h1>
+
+        <div class="topbar-buttons">
+
+            <button class="btn-primary"
+                    onclick="abrirModal()">
+
+                + Nuevo videojuego
+            </button>
+
+            <button class="btn-cancel"
+                    onclick="window.location.href='/dashboard'">
+
+                ← Volver
+            </button>
+
+        </div>
+    </div>
+
+    <div class="search-row">
+
+        <input id="buscar"
+               placeholder="Buscar videojuego...">
+
+        <button class="btn-primary"
+                onclick="buscarJuegos()">
+
+            Buscar
+        </button>
+
+    </div>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Videojuego</th>
+                <th>Género</th>
+                <th>Desarrollador</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody id="tablaJuegos"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- MODAL -->
+
+<div id="modalJuego"
+     class="modal">
+
+    <div class="modal-content">
+
+        <h2>Videojuego</h2>
+
+        <input type="hidden"
+               id="juegoId">
+
+        <input id="titulo"
+               placeholder="Título">
+
+        <textarea id="descripcion"
+                  placeholder="Descripción"></textarea>
+
+        <select id="genero">
+
+            <option>Acción</option>
+            <option>Aventura</option>
+            <option>RPG</option>
+            <option>Shooter</option>
+            <option>Estrategia</option>
+            <option>Carreras</option>
+            <option>Deportes</option>
+            <option>Simulación</option>
+            <option>Terror</option>
+            <option>Sandbox</option>
+            <option>MMORPG</option>
+            <option>Battle Royale</option>
+
+        </select>
+
+		<input id="desarrollador"
+		       placeholder="Desarrollador"
+		       th:value="${#authentication.name}"
+			   readonly>
+			   
+        <input id="precio"
+               type="number"
+               placeholder="Precio en COP">
+			   
+			   <input
+			          id="portada"
+			          placeholder="URL de portada del videojuego">
+
+        <div class="modal-buttons">
+
+            <button class="btn-cancel"
+                    onclick="cerrarModal()">
+
+                Cancelar
+            </button>
+
+            <button class="btn-primary"
+                    onclick="guardarJuego()">
+
+                Guardar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL DESCUENTO -->
+
+<div id="modalDescuento"
+     class="modal">
+
+    <div class="modal-content">
+
+        <h2>
+            Aplicar descuento
+        </h2>
+
+        <input
+                type="hidden"
+                id="descuentoJuegoId">
+
+        <label>
+            Tipo de descuento
+        </label>
+
+        <select id="tipoDescuento">
+
+            <option value="porcentaje">
+
+                Porcentaje (%)
+
+            </option>
+
+            <option value="precio">
+
+                Precio final
+
+            </option>
+
+        </select>
+
+        <input
+                type="number"
+                id="valorDescuento"
+                placeholder="Ingrese valor">
+
+        <div class="modal-buttons">
+
+            <button
+                    class="btn-cancel"
+                    onclick="cerrarModalDescuento()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                    class="btn-primary"
+                    onclick="guardarDescuento()">
+
+                Guardar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const formatoCOP =
+    new Intl.NumberFormat(
+        'es-CO'
+    );
+	
+	// =====================
+	// DESCUENTOS
+	// =====================
+
+	let precioOriginal = 0;
+
+	function abrirModalDescuento(
+	    id,
+	    precio
+	){
+
+	    document.getElementById(
+	        'descuentoJuegoId'
+	    ).value = id;
+
+	    precioOriginal = precio;
+
+	    document.getElementById(
+	        'valorDescuento'
+	    ).value = '';
+
+	    document.getElementById(
+	        'modalDescuento'
+	    ).style.display = 'flex';
+	}
+
+	function cerrarModalDescuento(){
+
+	    document.getElementById(
+	        'modalDescuento'
+	    ).style.display = 'none';
+	}
+
+	async function guardarDescuento(){
+
+	    const id =
+	        document.getElementById(
+	            'descuentoJuegoId'
+	        ).value;
+
+	    const tipo =
+	        document.getElementById(
+	            'tipoDescuento'
+	        ).value;
+
+	    const valor =
+	        parseFloat(
+	            document.getElementById(
+	                'valorDescuento'
+	            ).value
+	        );
+
+	    if(!valor || valor <= 0){
+
+	        alert(
+	            'Ingrese un valor válido'
+	        );
+
+	        return;
+	    }
+
+	    let nuevoPrecio;
+	    let descuento = 0;
+
+	    if(tipo === 'porcentaje'){
+
+	        descuento = valor;
+
+	        nuevoPrecio =
+	            precioOriginal -
+	            (
+	                precioOriginal *
+	                (valor / 100)
+	            );
+
+	    }else{
+
+	        nuevoPrecio = valor;
+
+	        descuento =
+	            (
+	                (
+	                    precioOriginal -
+	                    valor
+	                )
+	                / precioOriginal
+	            ) * 100;
+	    }
+
+	    try{
+
+	        const response =
+	            await fetch(
+
+	                `/api/juegos/${id}/descuento`,
+
+	                {
+
+	                    method:'PATCH',
+
+	                    headers:{
+	                        'Content-Type':
+	                            'application/json'
+	                    },
+
+	                    body:JSON.stringify({
+
+	                        precio:
+	                            nuevoPrecio,
+
+	                        descuento:
+	                            Math.round(
+	                                descuento
+	                            )
+
+	                    })
+
+	                }
+
+	            );
+
+	        if(response.ok){
+
+	            alert(
+	                'Descuento aplicado'
+	            );
+
+	            cerrarModalDescuento();
+
+	            cargarJuegos();
+
+	        }else{
+
+	            alert(
+	                'No se pudo aplicar'
+	            );
+	        }
+
+	    }catch(error){
+
+	        console.error(error);
+
+	        alert(
+	            'Error del servidor'
+	        );
+	    }
+	}
+
+async function cargarJuegos(){
+
+    const response =
+        await fetch('/api/juegos');
+
+    const juegos =
+        await response.json();
+
+    pintarTabla(juegos);
+}
+
+function pintarTabla(juegos){
+
+    const tabla =
+        document.getElementById(
+            'tablaJuegos'
+        );
+
+    tabla.innerHTML='';
+
+    juegos.forEach(juego=>{
+
+        tabla.innerHTML += `
+
+        <tr>
+
+            <td>
+
+                <div class="game-cell">
+
+					<div class="game-thumb">
+
+					    <img
+					        src="${
+					            juego.portada ||
+					            'https://via.placeholder.com/120x160?text=GAMEHUB'
+					        }"
+
+					        alt="${juego.titulo}"
+
+					        style="
+					            width:100%;
+					            height:100%;
+					            object-fit:cover;
+					            border-radius:12px;
+					        ">
+
+					</div>
+
+                    <div class="game-info">
+
+                        <h3>
+                            ${juego.titulo}
+                        </h3>
+
+                        <p>
+                            ${juego.descripcion ?? ''}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+            <td>
+
+                <span class="badge badge-genero">
+
+                    ${juego.genero}
+
+                </span>
+
+            </td>
+
+            <td>
+                ${juego.desarrollador ?? 'N/A'}
+            </td>
+
+            <td>
+
+                COP $
+                ${formatoCOP.format(juego.precio)}
+
+            </td>
+
+            <td>
+
+                <span class="badge
+                ${juego.activo
+                ? 'badge-on'
+                : 'badge-off'}">
+
+                ${juego.activo
+                ? 'Activo'
+                : 'Suspendido'}
+
+                </span>
+
+            </td>
+
+			<td>
+
+			    <button
+			        class="btn-edit"
+			        onclick="editarJuego('${juego.id}')">
+
+			        Editar
+
+			    </button>
+
+			    <button
+			        class="btn-edit"
+			        onclick="abrirModalDescuento(
+			            '${juego.id}',
+			            ${juego.precio}
+			        )">
+
+			        Descuento
+
+			    </button>
+				
+				<button
+				    class="btn-edit"
+				    onclick="restaurarPrecio('${juego.id}')">
+
+				    Restaurar precio
+
+				</button>
+
+			    <button
+			        class="btn-edit"
+			        onclick="cambiarEstado(
+			        '${juego.id}',
+			        ${!juego.activo})">
+
+			        ${juego.activo
+			        ? 'Suspender'
+			        : 'Activar'}
+
+			    </button>
+
+			    <button
+			        class="btn-delete"
+			        onclick="eliminarJuego('${juego.id}')">
+
+			        Eliminar
+
+			    </button>
+
+			</td>
+
+        </tr>
+        `;
+    });
+}
+
+function abrirModal(){
+
+    document.getElementById(
+        'modalJuego'
+    ).style.display='flex';
+}
+
+function cerrarModal(){
+
+    document.getElementById(
+        'modalJuego'
+    ).style.display='none';
+}
+
+async function guardarJuego(){
+
+    const id =
+        document.getElementById(
+            'juegoId'
+        ).value;
+
+    const body = {
+
+        titulo:
+            document.getElementById(
+                'titulo'
+            ).value,
+
+        descripcion:
+            document.getElementById(
+                'descripcion'
+            ).value,
+
+        genero:
+            document.getElementById(
+                'genero'
+            ).value,
+
+        desarrollador:
+            document.getElementById(
+                'desarrollador'
+            ).value,
+
+			precio:
+			    parseFloat(
+			        document.getElementById(
+			            'precio'
+			        ).value
+			    ),
+
+			portada:
+			    document.getElementById(
+			        'portada'
+			    ).value
+    };
+
+    const url =
+        id
+        ? '/api/juegos/' + id
+        : '/api/juegos';
+
+    const method =
+        id ? 'PUT' : 'POST';
+
+    await fetch(url,{
+
+        method,
+
+        headers:{
+            'Content-Type':
+                'application/json'
+        },
+
+        body:
+            JSON.stringify(body)
+    });
+
+    cerrarModal();
+
+    cargarJuegos();
+}
+
+async function editarJuego(id){
+
+    const response =
+        await fetch('/api/juegos/'+id);
+
+    const juego =
+        await response.json();
+
+    document.getElementById(
+        'juegoId'
+    ).value=juego.id;
+
+    document.getElementById(
+        'titulo'
+    ).value=juego.titulo;
+
+    document.getElementById(
+        'descripcion'
+    ).value=juego.descripcion;
+
+    document.getElementById(
+        'genero'
+    ).value=juego.genero;
+
+    document.getElementById(
+        'desarrollador'
+    ).value=juego.desarrollador;
+
+    document.getElementById(
+        'precio'
+    ).value=juego.precio;
+	document.getElementById(
+	    'portada'
+	).value =
+	    juego.portada ?? '';
+
+    abrirModal();
+}
+
+async function eliminarJuego(id){
+
+    const confirmar = confirm(
+        '¿Seguro que deseas eliminar este videojuego?'
+    );
+
+    if(!confirmar){
+        return;
+    }
+
+    try{
+
+        const response = await fetch(
+
+            '/api/juegos/' + id,
+
+            {
+                method:'DELETE'
+            }
+        );
+
+        if(response.ok){
+
+            alert('Videojuego eliminado');
+
+            cargarJuegos();
+
+        }else{
+
+            alert('No se pudo eliminar');
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        alert('Error eliminando videojuego');
+
+    }
+}
+
+async function cambiarEstado(
+    id,
+    estado
+){
+    try{
+        const response = await fetch(
+            `/api/juegos/${id}/estado?activo=${estado}`,
+            {
+               method:'PATCH'
+            }
+        );
+        if(response.ok){
+            alert(
+                estado
+                ? 'Videojuego activado'
+                : 'Videojuego suspendido'
+            );
+            cargarJuegos();
+        }else{
+            alert(
+                'No se pudo cambiar el estado'
+            );
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            'Error del servidor'
+        );
+    }
+}
+
+async function restaurarPrecio(id){
+
+    const confirmar = confirm(
+        '¿Volver al precio original?'
+    );
+
+    if(!confirmar){
+        return;
+    }
+
+    const response =
+        await fetch(
+
+            '/api/juegos/'
+            + id
+            + '/restaurar-precio',
+
+            {
+                method:'PATCH'
+            }
+        );
+
+    if(response.ok){
+
+        alert(
+            'Precio restaurado'
+        );
+
+        cargarJuegos();
+
+    }else{
+
+        alert(
+            'No se pudo restaurar'
+        );
+    }
+}
+
+async function buscarJuegos(){
+
+    const titulo =
+        document.getElementById(
+            'buscar'
+        ).value;
+
+    const response =
+        await fetch(
+            '/api/juegos/buscar?titulo='
+            + titulo
+        );
+
+    const juegos =
+        await response.json();
+
+    pintarTabla(juegos);
+}
+
+cargarJuegos();
+
+</script>
+
+</body>
+</html>

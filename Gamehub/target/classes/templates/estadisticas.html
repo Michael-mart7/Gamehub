@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GAMEHUB - Estadísticas</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --text:#e8eaf6;
+            --muted:#8b92b0;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--navy);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+        }
+
+        .navbar{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:1.5rem 3rem;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                rgba(0,0,0,.2);
+        }
+
+        .logo{
+
+            font-family:'Syne';
+            font-size:1.8rem;
+            font-weight:800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    white,
+                    var(--accent)
+                );
+
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:
+                transparent;
+        }
+
+        .btn-back{
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:.8rem 1.4rem;
+
+            background:var(--accent);
+
+            color:white;
+        }
+
+        .container{
+
+            max-width:1300px;
+
+            margin:auto;
+
+            padding:3rem;
+        }
+
+        h1{
+
+            font-family:'Syne';
+
+            margin-bottom:2rem;
+        }
+
+        .grid{
+
+            display:grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(250px,1fr)
+                );
+
+            gap:1.5rem;
+        }
+
+        .card{
+
+            background:var(--card);
+
+            border:1px solid var(--border);
+
+            border-radius:20px;
+
+            padding:2rem;
+
+            text-align:center;
+        }
+
+        .card h2{
+
+            font-size:2.5rem;
+
+            color:var(--accent);
+
+            margin-bottom:.5rem;
+        }
+
+        .card p{
+
+            color:var(--muted);
+        }
+
+        .highlight{
+
+            margin-top:3rem;
+
+            display:grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(300px,1fr)
+                );
+
+            gap:1.5rem;
+        }
+
+        .big-card{
+
+            background:var(--card);
+
+            border:1px solid var(--border);
+
+            border-radius:20px;
+
+            padding:2rem;
+        }
+
+        .big-card h3{
+
+            font-family:'Syne';
+
+            margin-bottom:1rem;
+        }
+
+        .big-card .value{
+
+            font-size:2rem;
+
+            color:var(--accent);
+
+            font-weight:700;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="logo">
+
+        GAMEHUB
+
+    </div>
+
+    <button
+        class="btn-back"
+        onclick="window.location.href='/dashboard'">
+
+        ← Volver
+
+    </button>
+
+</div>
+
+<div class="container">
+
+    <h1>
+
+        📈 Estadísticas de GAMEHUB
+
+    </h1>
+
+    <div class="grid">
+
+		<div class="card" id="cardUsuarios">
+		    <h2 id="usuarios">0</h2>
+            <p>Usuarios</p>
+        </div>
+
+        <div class="card" id="cardVideojuegos">
+            <h2 id="videojuegos">0</h2>
+            <p>Videojuegos</p>
+        </div>
+
+        <div class="card" id="cardCompras">
+            <h2 id="compras">0</h2>
+            <p>Compras</p>
+        </div>
+		<div class="card">
+
+		    <h2 id="ingresos">
+
+		        0
+
+		    </h2>
+
+		    <p>
+
+		        Ingresos
+
+		    </p>
+
+		</div>
+
+        <div class="card" id="cardComentarios">
+            <h2 id="comentarios">0</h2>
+            <p>Comentarios</p>
+        </div>
+
+        <div class="card" id="cardReportes">
+            <h2 id="reportes">0</h2>
+            <p>Reportes</p>
+        </div>
+
+        <div class="card" id="cardTickets">
+            <h2 id="tickets">0</h2>
+            <p>Tickets</p>
+        </div>
+
+        <div class="card" id="cardNoticias">
+            <h2 id="noticias">0</h2>
+            <p>Noticias</p>
+        </div>
+
+    </div>
+
+    <div class="highlight">
+
+        <div class="big-card" id="cardJuegoTop">
+
+            <h3>
+
+                🔥 Juego más comprado
+
+            </h3>
+
+            <div
+                class="value"
+                id="juegoTop">
+
+                -
+
+            </div>
+
+        </div>
+
+        <div class="big-card" id="cardComprasHoy">
+
+            <h3>
+
+                📅 Compras hoy de tus juegos
+
+            </h3>
+
+            <div
+                class="value"
+                id="comprasHoy">
+
+                0
+
+            </div>
+
+        </div>
+
+        <div class="big-card" id="cardComprasMes">
+
+            <h3>
+
+                📆 Compras este mes de tus juegos 
+
+            </h3>
+
+            <div
+                class="value"
+                id="comprasMes">
+
+                0
+
+            </div>
+			
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+	
+
+async function cargarEstadisticas(){
+
+    const response =
+        await fetch(
+            '/api/estadisticas'
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        'usuarios'
+    ).innerText =
+        data.usuarios;
+
+    document.getElementById(
+        'videojuegos'
+    ).innerText =
+        data.videojuegos;
+
+    document.getElementById(
+        'compras'
+    ).innerText =
+        data.compras;
+		
+		document.getElementById(
+		    'ingresos'
+		).innerText =
+
+		    'COP $ ' +
+
+		    new Intl.NumberFormat(
+		        'es-CO'
+		    ).format(
+
+		        data.ingresos || 0
+		    );
+
+    document.getElementById(
+        'comentarios'
+    ).innerText =
+        data.comentarios;
+
+    document.getElementById(
+        'reportes'
+    ).innerText =
+        data.reportes;
+
+    document.getElementById(
+        'tickets'
+    ).innerText =
+        data.tickets;
+
+    document.getElementById(
+        'noticias'
+    ).innerText =
+        data.noticias;
+
+    document.getElementById(
+        'juegoTop'
+    ).innerText =
+        data.juegoMasComprado;
+
+    document.getElementById(
+        'comprasHoy'
+    ).innerText =
+        data.comprasHoy;
+
+    document.getElementById(
+        'comprasMes'
+    ).innerText =
+        data.comprasMes;
+		
+		const rol =
+		    data.rol;
+			if(rol === 'DESARROLLADOR'){
+
+			    ocultarPorId('cardUsuarios');
+			    ocultarPorId('cardReportes');
+			    ocultarPorId('cardTickets');
+			    ocultarPorId('cardNoticias');
+			}
+			
+			if(rol === 'MODERADOR'){
+
+			    ocultarPorId('cardUsuarios');
+			    ocultarPorId('cardVideojuegos');
+			    ocultarPorId('cardCompras');
+			    ocultarPorId('cardTickets');
+			    ocultarPorId('cardNoticias');
+
+			    ocultarPorId('cardComprasHoy');
+			    ocultarPorId('cardComprasMes');
+			
+			}
+			if(rol === 'SOPORTE'){
+
+			    ocultarPorId('cardUsuarios');
+			    ocultarPorId('cardVideojuegos');
+			    ocultarPorId('cardCompras');
+			    ocultarPorId('cardComentarios');
+			    ocultarPorId('cardReportes');
+			    ocultarPorId('cardNoticias');
+
+			    ocultarPorId('cardComprasHoy');
+			    ocultarPorId('cardComprasMes');
+			}
+			if(rol === 'EDITOR'){
+
+			    ocultarPorId('cardUsuarios');
+			    ocultarPorId('cardVideojuegos');
+			    ocultarPorId('cardCompras');
+			    ocultarPorId('cardComentarios');
+			    ocultarPorId('cardReportes');
+			    ocultarPorId('cardTickets');
+			    ocultarPorId('cardComprasHoy');
+			    ocultarPorId('cardComprasMes');
+			}
+}
+
+function ocultarCard(id){
+
+    const elemento =
+        document.getElementById(id);
+
+    if(!elemento) return;
+
+    const card =
+        elemento.closest('.card');
+
+    if(card){
+
+        card.style.display =
+            'none';
+    }
+}
+function ocultarPorId(id){
+
+    const elemento =
+        document.getElementById(id);
+
+    if(elemento){
+
+        elemento.style.display =
+            'none';
+    }
+}
+cargarEstadisticas();
+
+</script>
+
+</body>
+</html>

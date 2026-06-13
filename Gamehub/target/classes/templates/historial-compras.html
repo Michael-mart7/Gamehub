@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Historial de Compras - GAMEHUB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet">
+
+<style>
+
+    :root{
+        --navy:#0d0f1a;
+        --panel:#13172a;
+        --card:#1a1f35;
+        --border:#252b45;
+        --accent:#4f6ef7;
+        --text:#e8eaf6;
+        --muted:#8b92b0;
+    }
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+    }
+
+    body{
+        background:var(--navy);
+        color:var(--text);
+        font-family:'DM Sans',sans-serif;
+    }
+
+    .navbar{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:1.5rem 3rem;
+        border-bottom:1px solid var(--border);
+        background:rgba(0,0,0,.2);
+    }
+
+    .logo{
+        font-family:'Syne';
+        font-size:1.8rem;
+        font-weight:800;
+
+        background:
+        linear-gradient(
+            135deg,
+            white,
+            var(--accent)
+        );
+
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    }
+
+    .btn-back{
+        border:none;
+        cursor:pointer;
+        border-radius:12px;
+        padding:.8rem 1.4rem;
+        background:var(--accent);
+        color:white;
+        font-weight:600;
+    }
+
+    .container{
+        max-width:1200px;
+        margin:auto;
+        padding:3rem;
+    }
+
+    h1{
+        font-family:'Syne';
+        margin-bottom:2rem;
+    }
+
+    .table-container{
+
+        background:var(--card);
+
+        border:1px solid var(--border);
+
+        border-radius:20px;
+
+        overflow:hidden;
+    }
+
+    table{
+
+        width:100%;
+
+        border-collapse:collapse;
+    }
+
+    th{
+
+        background:var(--panel);
+
+        color:var(--accent);
+
+        text-align:left;
+
+        padding:1rem;
+    }
+
+    td{
+
+        padding:1rem;
+
+        border-top:
+            1px solid var(--border);
+    }
+
+    tr:hover{
+
+        background:
+            rgba(79,110,247,.05);
+    }
+
+    .empty-state{
+
+        display:none;
+
+        text-align:center;
+
+        padding:4rem;
+
+        background:var(--card);
+
+        border-radius:20px;
+
+        border:1px solid var(--border);
+    }
+
+    .empty-state h2{
+
+        font-family:'Syne';
+
+        margin-bottom:1rem;
+    }
+
+    .empty-state p{
+
+        color:var(--muted);
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+<div class="logo">
+
+    GAMEHUB
+
+</div>
+
+<button
+    class="btn-back"
+    onclick="window.location.href='/dashboard'">
+
+    ← Volver
+
+</button>
+
+
+</div>
+
+<div class="container">
+
+
+<h1>
+
+    📜 Historial de Compras
+
+</h1>
+
+<div
+    id="emptyState"
+    class="empty-state">
+
+    <h2>
+
+        No tienes compras registradas
+
+    </h2>
+
+    <p>
+
+        Cuando compres videojuegos
+        aparecerán aquí.
+
+    </p>
+
+</div>
+
+<div
+    id="tablaContainer"
+    class="table-container">
+
+    <table>
+
+        <thead>
+
+        <tr>
+
+            <th>
+                Videojuego
+            </th>
+
+            <th>
+                Precio pagado
+            </th>
+			<th>
+				Fecha
+			</th>
+        </tr>
+
+        </thead>
+
+        <tbody id="tablaCompras">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+</div>
+
+<script>
+
+async function cargarHistorial(){
+
+    const response =
+
+        await fetch(
+            '/api/compras/historial'
+        );
+
+    const compras =
+        await response.json();
+
+    const tabla =
+        document.getElementById(
+            'tablaCompras'
+        );
+
+    const empty =
+        document.getElementById(
+            'emptyState'
+        );
+
+    const contenedor =
+        document.getElementById(
+            'tablaContainer'
+        );
+
+    tabla.innerHTML = '';
+
+    if(compras.length === 0){
+
+        empty.style.display =
+            'block';
+
+        contenedor.style.display =
+            'none';
+
+        return;
+    }
+
+    compras.forEach(compra => {
+
+		tabla.innerHTML += `
+
+		<tr>
+
+		    <td>
+
+		        ${compra.tituloJuego}
+
+		    </td>
+
+		    <td>
+
+		        COP $
+
+		        ${new Intl.NumberFormat(
+		            'es-CO'
+		        ).format(
+		            compra.precioPagado
+		        )}
+
+		    </td>
+
+		    <td>
+
+		        ${
+		            new Date(
+		                compra.fechaCompra
+		            )
+		            .toLocaleString(
+		                'es-CO'
+		            )
+		        }
+
+		    </td>
+
+		</tr>
+
+		`;
+    });
+}
+
+cargarHistorial();
+
+</script>
+
+</body>
+</html>

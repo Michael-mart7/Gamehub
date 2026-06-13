@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Panel Soporte</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --success:#22c55e;
+            --text:#e8eaf6;
+            --muted:#8b92b0;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--navy);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+        }
+
+        .navbar{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:1.5rem 3rem;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                rgba(0,0,0,.2);
+        }
+
+        .logo{
+
+            font-family:'Syne';
+            font-size:1.8rem;
+            font-weight:800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    white,
+                    var(--accent)
+                );
+
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:
+                transparent;
+        }
+
+        .btn-back{
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:.8rem 1.4rem;
+
+            background:var(--accent);
+
+            color:white;
+        }
+
+        .container{
+
+            max-width:1200px;
+            margin:auto;
+
+            padding:3rem;
+        }
+
+        h1{
+
+            font-family:'Syne';
+            margin-bottom:2rem;
+        }
+
+        .tickets-grid{
+
+            display:flex;
+            flex-direction:column;
+            gap:1.5rem;
+        }
+
+        .ticket-card{
+
+            background:var(--card);
+
+            border:1px solid var(--border);
+
+            border-radius:20px;
+
+            padding:2rem;
+        }
+
+        .ticket-user{
+
+            color:var(--muted);
+            margin:.7rem 0;
+        }
+
+        textarea,
+        select{
+
+            width:100%;
+
+            background:var(--panel);
+
+            border:1px solid var(--border);
+
+            color:var(--text);
+
+            border-radius:14px;
+
+            padding:1rem;
+
+            font-family:'DM Sans';
+
+            margin-top:1rem;
+        }
+
+        textarea{
+
+            resize:none;
+            min-height:120px;
+        }
+
+        .btn-save{
+
+            margin-top:1rem;
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:1rem 1.5rem;
+
+            background:var(--success);
+
+            color:white;
+
+            font-weight:700;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="logo">
+
+        GAMEHUB
+
+    </div>
+
+    <button
+        class="btn-back"
+        onclick="window.location.href='/dashboard'">
+
+        ← Volver
+
+    </button>
+
+</div>
+
+<div class="container">
+
+    <h1>
+
+        Gestión de tickets de soporte
+
+    </h1>
+
+    <div
+        id="ticketsGrid"
+        class="tickets-grid">
+
+    </div>
+
+</div>
+
+<script>
+
+async function cargarTickets(){
+
+    const response =
+        await fetch(
+            '/api/tickets'
+        );
+
+    const tickets =
+        await response.json();
+
+    const grid =
+        document.getElementById(
+            'ticketsGrid'
+        );
+
+    grid.innerHTML='';
+
+    if(tickets.length===0){
+
+        grid.innerHTML = `
+
+            <div style="
+                text-align:center;
+                color:#8b92b0;
+            ">
+
+                No hay tickets disponibles
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    tickets.forEach(t=>{
+
+        let mensajesHtml='';
+
+        t.mensajes.forEach(m=>{
+
+            const esSoporte =
+                m.autor === 'Soporte';
+
+				mensajesHtml += `
+
+				    <div style="
+				        margin-top:1rem;
+				        padding:1rem;
+				        border-radius:18px;
+				        border:1px solid var(--border);
+				        background:
+				        ${
+				            esSoporte
+				            ? 'rgba(79,110,247,.12)'
+				            : 'rgba(255,255,255,.04)'
+				        };
+				    ">
+
+				        <div style="
+				            display:flex;
+				            justify-content:space-between;
+				            align-items:center;
+				            margin-bottom:1rem;
+				        ">
+
+				            <strong>
+
+				                ${m.autor}
+
+				            </strong>
+
+				            <span style="
+				                color:#8b92b0;
+				                font-size:.85rem;
+				            ">
+
+				                ${
+				                    new Date(m.fecha)
+				                    .toLocaleString(
+				                        'es-CO',
+				                        {
+				                            dateStyle:'short',
+				                            timeStyle:'short'
+				                        }
+				                    )
+				                }
+
+				            </span>
+
+				        </div>
+
+				        <div>
+
+				            ${m.mensaje}
+
+				        </div>
+
+				    </div>
+
+            `;
+        });
+
+        grid.innerHTML += `
+
+            <div class="ticket-card">
+
+                <h2>
+
+                    ${t.asunto}
+
+                </h2>
+
+                <div class="ticket-user">
+
+                    Usuario:
+                    ${t.correoUsuario}
+
+                </div>
+
+                ${mensajesHtml}
+
+                ${
+                    t.estado !== 'CERRADO'
+                    ?
+
+                    `
+
+                    <textarea
+                        id="respuesta-${t.id}"
+                        placeholder="Escribe una respuesta..."
+                        style="margin-top:1rem;">
+
+                    </textarea>
+
+                    `
+
+                    :
+
+                    `
+                    <p style="
+                        margin-top:1rem;
+                        color:#8b92b0;
+                    ">
+
+                        Ticket cerrado
+
+                    </p>
+                    `
+                }
+
+                <select
+                    id="estado-${t.id}">
+
+                    <option
+                        value="EN_PROCESO"
+                        ${t.estado==='EN_PROCESO'
+                        ? 'selected'
+                        : ''}>
+
+                        EN PROCESO
+
+                    </option>
+
+                    <option
+                        value="CERRADO"
+                        ${t.estado==='CERRADO'
+                        ? 'selected'
+                        : ''}>
+
+                        CERRADO
+
+                    </option>
+
+                </select>
+
+                <button
+                    class="btn-save"
+                    onclick="guardarCambios('${t.id}')">
+
+                    Guardar cambios
+
+                </button>
+
+            </div>
+
+        `;
+    });
+}
+
+async function guardarCambios(id){
+
+    const respuesta =
+        document.getElementById(
+            'respuesta-' + id
+        )?.value;
+
+    const estado =
+        document.getElementById(
+            'estado-' + id
+        ).value;
+
+    // respuesta soporte
+    if(respuesta
+    && respuesta.trim()){
+
+        await fetch(
+
+            '/api/tickets/responder/'
+            + id
+            + '?respuesta='
+            + encodeURIComponent(
+                respuesta
+            ),
+
+            {
+                method:'PUT'
+            }
+        );
+    }
+
+    // estado
+    await fetch(
+
+        '/api/tickets/estado/'
+        + id
+        + '?estado='
+        + estado,
+
+        {
+            method:'PUT'
+        }
+    );
+
+    alert(
+        'Ticket actualizado'
+    );
+
+    cargarTickets();
+}
+
+cargarTickets();
+
+</script>
+
+</body>
+</html>
