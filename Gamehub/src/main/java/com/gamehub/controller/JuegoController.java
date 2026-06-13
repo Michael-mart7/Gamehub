@@ -2,6 +2,7 @@ package com.gamehub.controller;
 
 import com.gamehub.model.Juego;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.core.Authentication;
 import com.gamehub.service.JuegoService;
@@ -139,18 +140,25 @@ public class JuegoController {
     	    summary = "Crear videojuego",
     	    description = "Registra un videojuego nuevo"
     	)
+
     @PreAuthorize(
             "hasRole('ADMIN') or hasRole('DESARROLLADOR')"
     )
     public ResponseEntity<Juego> crear(
-            @RequestBody Juego juego
+
+            @RequestBody Juego juego,
+
+            Authentication auth
     ) {
+
+        juego.setDesarrollador(
+                auth.getName()
+        );
 
         return ResponseEntity.ok(
                 juegoService.crear(juego)
         );
     }
-
     // ─────────────────────────────
     // EDITAR
     // ─────────────────────────────
