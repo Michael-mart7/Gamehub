@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de noticias – GAMEHUB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy:   #0d0f1a;
+            --panel:  #13172a;
+            --card:   #1a1f35;
+            --border: #252b45;
+            --accent: #4f6ef7;
+            --accent2:#7c3aed;
+            --danger: #ef4444;
+            --success:#22c55e;
+            --warning:#f59e0b;
+            --text:   #e8eaf6;
+            --muted:  #8b92b0;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            background: var(--navy);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.4rem 3rem;
+            background: rgba(0,0,0,.25);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            border-radius: 12px;
+            padding: .7rem 1.3rem;
+            background: transparent;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            transition: .2s;
+        }
+        .btn-back:hover { background: var(--panel); color: var(--text); }
+
+        /* ── LAYOUT ── */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 3rem;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .page-header h1 span {
+            background: linear-gradient(135deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .form-card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full { grid-template-columns: 1fr; }
+
+        .form-group { display: flex; flex-direction: column; gap: .5rem; }
+
+        .form-group label {
+            font-size: .85rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 12px;
+            padding: .9rem 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .97rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        input::placeholder, textarea::placeholder { color: #3d4466; }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,110,247,.15);
+        }
+
+        select option { background: var(--panel); }
+
+        textarea { resize: vertical; min-height: 130px; }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── BOTONES ── */
+        .btn {
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            padding: .85rem 1.6rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .97rem;
+            font-weight: 600;
+            transition: .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .btn:hover { transform: translateY(-1px); opacity: .88; }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { background: var(--panel); color: var(--text); }
+        .btn-danger { background: rgba(239,68,68,.15); color: var(--danger); border: 1px solid rgba(239,68,68,.25); }
+        .btn-danger:hover { background: rgba(239,68,68,.25); }
+        .btn-warning { background: rgba(245,158,11,.15); color: var(--warning); border: 1px solid rgba(245,158,11,.25); }
+        .btn-warning:hover { background: rgba(245,158,11,.25); }
+        .btn-success { background: rgba(34,197,94,.15); color: var(--success); border: 1px solid rgba(34,197,94,.25); }
+        .btn-success:hover { background: rgba(34,197,94,.25); }
+        .btn-sm { padding: .55rem 1rem; font-size: .88rem; border-radius: 10px; }
+
+        /* ── NEWS GRID ── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: .25s;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card:hover { transform: translateY(-4px); border-color: rgba(79,110,247,.3); }
+
+        .news-card.inactive { opacity: .55; }
+
+        .news-image-wrap { position: relative; }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Fallback gradient cuando no hay imagen */
+        .news-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .status-dot {
+            position: absolute;
+            top: .8rem;
+            right: .8rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--card);
+        }
+        .status-dot.active   { background: var(--success); box-shadow: 0 0 6px var(--success); }
+        .status-dot.inactive { background: var(--muted); }
+
+        .news-content {
+            padding: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: .8rem;
+        }
+
+        .badge-tipo {
+            display: inline-block;
+            padding: .3rem .8rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .badge-NOTICIA   { background: rgba(79,110,247,.15); color: var(--accent); }
+        .badge-PROMOCION { background: rgba(245,158,11,.15); color: var(--warning); }
+
+        .badge-estado {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        .news-content h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            margin-bottom: .6rem;
+            line-height: 1.4;
+        }
+
+        .news-content p {
+            color: var(--muted);
+            font-size: .9rem;
+            line-height: 1.6;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-actions {
+            display: flex;
+            gap: .6rem;
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
+        }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state p { font-size: 1rem; }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">GAMEHUB</div>
+    <button class="btn-back" onclick="window.location.href='/dashboard'">
+        ← Volver
+    </button>
+</div>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1><span>Gestión</span> editorial</h1>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+        <div class="form-card-title" id="formTitle">📝 Nueva publicación</div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column:1/-1">
+                <label for="titulo">Título *</label>
+                <input id="titulo" placeholder="Escribe el título de la noticia o promoción..."/>
+            </div>
+        </div>
+
+        <div class="form-row full">
+            <div class="form-group">
+                <label for="contenido">Contenido *</label>
+                <textarea id="contenido" placeholder="Redacta el contenido completo aquí..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="imagen">URL de imagen (opcional)</label>
+                <input id="imagen" placeholder="https://..."/>
+            </div>
+            <div class="form-group">
+                <label for="tipo">Tipo de publicación</label>
+                <select id="tipo">
+                    <option value="NOTICIA">🗞️ Noticia</option>
+                    <option value="PROMOCION">🔥 Promoción</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button id="btnGuardar" class="btn btn-primary" onclick="guardarNoticia()">
+                🚀 Publicar
+            </button>
+            <button class="btn btn-ghost" onclick="cancelarEdicion()" id="btnCancelar" style="display:none">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="section-header">
+        <h2>Publicaciones</h2>
+    </div>
+
+    <div id="newsGrid" class="news-grid"></div>
+
+</div>
+
+<script>
+    let noticiaEditando = null;
+
+    async function guardarNoticia() {
+        const titulo   = document.getElementById('titulo').value;
+        const contenido = document.getElementById('contenido').value;
+        const imagen   = document.getElementById('imagen').value;
+        const tipo     = document.getElementById('tipo').value;
+
+        if (!titulo.trim() || !contenido.trim()) {
+            alert('Completa los campos obligatorios');
+            return;
+        }
+
+        if (noticiaEditando) {
+            await fetch(
+                '/api/noticias/' + noticiaEditando
+                + '?titulo='    + encodeURIComponent(titulo)
+                + '&contenido=' + encodeURIComponent(contenido)
+                + '&imagen='    + encodeURIComponent(imagen)
+                + '&tipo='      + tipo,
+                { method: 'PUT' }
+            );
+            noticiaEditando = null;
+            document.getElementById('btnGuardar').innerHTML = '🚀 Publicar';
+            document.getElementById('formTitle').textContent = '📝 Nueva publicación';
+            document.getElementById('btnCancelar').style.display = 'none';
+        } else {
+            await fetch(
+                '/api/noticias'
+                + '?titulo='    + encodeURIComponent(titulo)
+                + '&contenido=' + encodeURIComponent(contenido)
+                + '&imagen='    + encodeURIComponent(imagen)
+                + '&tipo='      + tipo,
+                { method: 'POST' }
+            );
+        }
+
+        limpiarFormulario();
+        cargarNoticias();
+    }
+
+    async function eliminar(id) {
+        if (!confirm('¿Eliminar esta publicación?')) return;
+        await fetch('/api/noticias/' + id, { method: 'DELETE' });
+        cargarNoticias();
+    }
+
+    function editar(noticia) {
+        noticiaEditando = noticia.id;
+        document.getElementById('titulo').value    = noticia.titulo;
+        document.getElementById('contenido').value = noticia.contenido;
+        document.getElementById('imagen').value    = noticia.imagen || '';
+        document.getElementById('tipo').value      = noticia.tipo;
+        document.getElementById('btnGuardar').innerHTML = '💾 Guardar cambios';
+        document.getElementById('formTitle').textContent = '✏️ Editando publicación';
+        document.getElementById('btnCancelar').style.display = 'inline-flex';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicion() {
+        noticiaEditando = null;
+        limpiarFormulario();
+        document.getElementById('btnGuardar').innerHTML = '🚀 Publicar';
+        document.getElementById('formTitle').textContent = '📝 Nueva publicación';
+        document.getElementById('btnCancelar').style.display = 'none';
+    }
+
+    function limpiarFormulario() {
+        document.getElementById('titulo').value    = '';
+        document.getElementById('contenido').value = '';
+        document.getElementById('imagen').value    = '';
+        document.getElementById('tipo').value      = 'NOTICIA';
+    }
+
+    async function cambiarEstado(id, activa) {
+        await fetch('/api/noticias/' + id + '?activa=' + !activa, { method: 'PATCH' });
+        cargarNoticias();
+    }
+
+    async function cargarNoticias() {
+        const response = await fetch('/api/noticias');
+        const noticias = await response.json();
+        const grid = document.getElementById('newsGrid');
+        grid.innerHTML = '';
+
+        if (!noticias || noticias.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>No hay publicaciones todavía. ¡Crea la primera!</p>
+                </div>`;
+            return;
+        }
+
+        noticias.forEach(n => {
+            const imgHtml = n.imagen
+                ? `<img class="news-image" src="${n.imagen}" onerror="this.parentElement.innerHTML='<div class=\\'news-image-placeholder\\'>🎮</div>'">`
+                : `<div class="news-image-placeholder">🎮</div>`;
+
+            grid.innerHTML += `
+                <div class="news-card ${n.activa ? '' : 'inactive'}">
+                    <div class="news-image-wrap">
+                        ${imgHtml}
+                        <div class="status-dot ${n.activa ? 'active' : 'inactive'}"></div>
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="badge-tipo badge-${n.tipo}">${n.tipo === 'NOTICIA' ? '🗞️ Noticia' : '🔥 Promoción'}</span>
+                            <span class="badge-estado">${n.activa ? 'Activa' : 'Inactiva'}</span>
+                        </div>
+                        <h2>${n.titulo}</h2>
+                        <p>${n.contenido}</p>
+                        <div class="news-actions">
+                            <button class="btn btn-primary btn-sm" onclick='editar(${JSON.stringify(n)})'>✏️ Editar</button>
+                            <button class="btn btn-sm ${n.activa ? 'btn-warning' : 'btn-success'}" onclick="cambiarEstado('${n.id}', ${n.activa})">
+                                ${n.activa ? '⏸ Desactivar' : '▶ Activar'}
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminar('${n.id}')">🗑 Eliminar</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    cargarNoticias();
+</script>
+
+</body>
+</html>

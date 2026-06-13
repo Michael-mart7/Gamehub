@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="/css/gamehub.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:    #0d0f1a;
+            --panel:   #13172a;
+            --card:    #1a1f35;
+            --border:  #252b45;
+            --accent:  #4f6ef7;
+            --accent2: #7c3aed;
+            --danger:  #ef4444;
+            --success: #22c55e;
+            --text:    #e8eaf6;
+            --muted:   #6b7280;
+            --radius:  12px;
+        }
+
+        body {
+            background: var(--navy);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2.5rem;
+        }
+
+        /* Contenedor central que limita el ancho */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .topbar h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .topbar-buttons { display: flex; gap: 0.75rem; }
+
+        /* ── Botones ── */
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.65rem 1.3rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity .2s, transform .15s;
+        }
+        .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+
+        .btn-cancel {
+            background: var(--border);
+            color: var(--text);
+            border: none;
+            padding: 0.65rem 1.3rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .btn-cancel:hover { opacity: .7; }
+
+        .btn-edit {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            margin-right: 0.4rem;
+            transition: background .2s, color .2s;
+        }
+        .btn-edit:hover { background: var(--accent); color: #fff; }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+        .btn-delete:hover { background: var(--danger); color: #fff; }
+
+        /* ── Buscador ── */
+        .search-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-row input {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.7rem 1rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .search-row input:focus { border-color: var(--accent); }
+        .search-row input::placeholder { color: var(--muted); }
+
+        /* ── Tabla ── */
+        .table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--panel);
+        }
+
+        th {
+            padding: 1rem 1.2rem;
+            text-align: left;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover { background: rgba(79,110,247,.05); }
+
+        /* Badge de rol */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(79,110,247,.15);
+            color: var(--accent);
+            border: 1px solid rgba(79,110,247,.3);
+        }
+
+        /* Badge de estado */
+        .badge-on  { background: rgba(34,197,94,.12); color: var(--success); border-color: rgba(34,197,94,.3); }
+        .badge-off { background: rgba(239,68,68,.12);  color: var(--danger);  border-color: rgba(239,68,68,.3); }
+
+        /* ── Modal ── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 24px 60px rgba(0,0,0,.5);
+            animation: slideUp .25s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color .2s;
+            width: 100%;
+        }
+        .modal-content input:focus,
+        .modal-content select:focus { border-color: var(--accent); }
+        .modal-content input::placeholder { color: var(--muted); }
+        .modal-content select option { background: var(--panel); }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+<div class="topbar">
+    <h1>Gestión de Usuarios</h1>
+    <div class="topbar-buttons">
+        <button class="btn-primary" onclick="abrirModal()">+ Nuevo usuario</button>
+        <button class="btn-cancel"  onclick="window.location.href='/dashboard'">← Volver</button>
+    </div>
+</div>
+
+<div class="search-row">
+    <input type="text" id="buscar" placeholder="Buscar usuario por nombre…">
+    <button class="btn-primary" onclick="buscarUsuarios()">Buscar</button>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaUsuarios"></tbody>
+    </table>
+</div>
+
+<!-- Botón desactivar suelto del HTML original (conservado) -->
+<button class="btn-edit" onclick="cambiarEstado('${usuario.id}', false)" style="display:none">Desactivar</button>
+
+<!-- MODAL CREAR -->
+<div id="modalUsuario" class="modal">
+    <div class="modal-content">
+        <h2>Nuevo Usuario</h2>
+        <input type="text"     id="nombre"   placeholder="Nombre">
+        <input type="email"    id="correo"   placeholder="Correo">
+        <input type="password" id="password" placeholder="Contraseña">
+        <select id="rol">
+            <option value="JUGADOR">JUGADOR</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="SOPORTE">SOPORTE</option>
+            <option value="MODERADOR">MODERADOR</option>
+            <option value="DESARROLLADOR">DESARROLLADOR</option>
+            <option value="EDITOR">EDITOR</option>
+        </select>
+        <div class="modal-buttons">
+            <button class="btn-cancel"  onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarUsuario()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modalEditar" class="modal">
+    <div class="modal-content">
+        <h2>Editar Usuario</h2>
+        <input type="hidden"   id="editId">
+        <input type="text"     id="editNombre"   placeholder="Nombre">
+        <input type="password" id="editPassword" placeholder="Nueva contraseña (opcional)">
+        <select id="editRol">
+            <option value="JUGADOR">JUGADOR</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="SOPORTE">SOPORTE</option>
+            <option value="MODERADOR">MODERADOR</option>
+            <option value="DESARROLLADOR">DESARROLLADOR</option>
+            <option value="EDITOR">EDITOR</option>
+        </select>
+        <div class="modal-buttons">
+            <button class="btn-cancel"  onclick="cerrarEditarModal()">Cancelar</button>
+            <button class="btn-primary" onclick="actualizarUsuario()">Actualizar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // =========================
+    // CARGAR USUARIOS
+    // =========================
+
+    async function cargarUsuarios(){
+
+        try{
+
+            const response = await fetch('/api/usuarios');
+
+            if(!response.ok){
+
+                alert('No autorizado');
+
+                return;
+            }
+
+            const usuarios = await response.json();
+
+            const tabla = document.getElementById('tablaUsuarios');
+
+            tabla.innerHTML = '';
+
+            usuarios.forEach(usuario => {
+
+                tabla.innerHTML += `
+
+                    <tr>
+
+                        <td>${usuario.nombre}</td>
+
+                        <td>${usuario.correo}</td>
+
+                        <td><span class="badge">${usuario.rol}</span></td>
+
+                        <td>
+                            <span class="badge ${usuario.activo ? 'badge-on' : 'badge-off'}">
+                                ${usuario.activo ? 'Activo' : 'Inactivo'}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="btn-edit"
+                                onclick="editarUsuario('${usuario.id}')">
+
+                                Editar
+
+                            </button>
+							
+							<button
+							    class="btn-edit"
+							    onclick="cambiarEstado('${usuario.id}', ${!usuario.activo})">
+
+							    ${usuario.activo ? 'Desactivar' : 'Activar'}
+
+							</button>
+
+                            <button
+                                class="btn-delete"
+                                onclick="eliminarUsuario('${usuario.id}')">
+
+                                Eliminar
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+            });
+
+        }catch(error){
+
+            console.error(error);
+
+            alert('Error cargando usuarios');
+
+        }
+
+    }
+	
+	async function cambiarEstado(id, estado){
+
+	    try{
+
+	        const response = await fetch(
+
+	            `/api/usuarios/${id}/estado?activo=${estado}`,
+
+	            {
+	                method:'PATCH'
+	            }
+
+	        );
+
+	        if(response.ok){
+
+	            cargarUsuarios();
+
+	        }else{
+
+	            alert('No se pudo cambiar el estado');
+
+	        }
+
+	    }catch(error){
+
+	        console.error(error);
+
+	        alert('Error del servidor');
+
+	    }
+
+	}
+
+    async function buscarUsuarios(){
+
+        const nombre =
+            document.getElementById('buscar').value;
+
+        const response =
+            await fetch('/api/usuarios/buscar?nombre=' + nombre);
+
+        const usuarios =
+            await response.json();
+
+        const tabla =
+            document.getElementById('tablaUsuarios');
+
+        tabla.innerHTML = '';
+
+        usuarios.forEach(usuario => {
+
+            tabla.innerHTML += `
+                <tr>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.correo}</td>
+                    <td><span class="badge">${usuario.rol}</span></td>
+                    <td>
+                        <span class="badge ${usuario.activo ? 'badge-on' : 'badge-off'}">
+                            ${usuario.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+
+    }
+
+    cargarUsuarios();
+
+    // =========================
+    // ELIMINAR
+    // =========================
+
+    async function eliminarUsuario(id){
+
+        const confirmar = confirm(
+            '¿Seguro que deseas eliminar este usuario?'
+        );
+
+        if(!confirmar){
+            return;
+        }
+
+        try{
+
+            const response = await fetch(`/api/usuarios/${id}`,{
+
+                method:'DELETE'
+
+            });
+
+            if(response.ok){
+
+                alert('Usuario eliminado');
+
+                cargarUsuarios();
+
+            }else{
+
+                alert('No se pudo eliminar');
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            alert('Error eliminando usuario');
+
+        }
+
+    }
+
+    // =========================
+    // MODAL CREAR
+    // =========================
+
+    function abrirModal(){
+
+        document
+            .getElementById('modalUsuario')
+            .style.display='flex';
+    }
+
+    function cerrarModal(){
+
+        document
+            .getElementById('modalUsuario')
+            .style.display='none';
+    }
+
+    // =========================
+    // CREAR USUARIO
+    // =========================
+
+    async function guardarUsuario(){
+
+        const nombre =
+            document.getElementById('nombre').value;
+
+        const correo =
+            document.getElementById('correo').value;
+
+        const password =
+            document.getElementById('password').value;
+
+        const rol =
+            document.getElementById('rol').value;
+
+        try{
+
+            const response = await fetch('/api/usuarios',{
+
+                method:'POST',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify({
+
+                    nombre,
+                    correo,
+                    password,
+                    rol
+
+                })
+
+            });
+
+            if(response.ok){
+
+                alert('Usuario creado');
+
+                cerrarModal();
+
+                cargarUsuarios();
+
+            }else{
+
+                alert('Error creando usuario');
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            alert('Error del servidor');
+
+        }
+
+    }
+
+    // =========================
+    // EDITAR USUARIO
+    // =========================
+
+    async function editarUsuario(id){
+
+        try {
+
+            const response = await fetch('/api/usuarios/' + id);
+
+            const usuario = await response.json();
+
+            document.getElementById('editId').value =
+                usuario.id || id;
+
+            document.getElementById('editNombre').value =
+                usuario.nombre || '';
+
+            document.getElementById('editRol').value =
+                usuario.rol || 'JUGADOR';
+
+            document.getElementById('modalEditar')
+                .style.display = 'flex';
+
+        } catch(error) {
+
+            console.error(error);
+
+            alert('Error cargando el usuario');
+
+        }
+
+    }
+
+    function cerrarEditarModal(){
+
+        document
+            .getElementById('modalEditar')
+            .style.display='none';
+    }
+
+    // =========================
+    // ACTUALIZAR USUARIO
+    // =========================
+
+    async function actualizarUsuario(){
+
+        const id =
+            document.getElementById('editId').value;
+
+        const nombre =
+            document.getElementById('editNombre').value;
+
+        const password =
+            document.getElementById('editPassword').value;
+
+        const rol =
+            document.getElementById('editRol').value;
+
+        try{
+
+            const response = await fetch('/api/usuarios/' + id,{
+
+                method:'PUT',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify({
+
+                    nombre,
+                    password,
+                    rol
+
+                })
+
+            });
+
+            if(response.ok){
+
+                alert('Usuario actualizado');
+
+                cerrarEditarModal();
+
+                cargarUsuarios();
+
+            }else{
+
+                alert('Error actualizando');
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            alert('Error del servidor');
+
+        }
+
+    }
+
+</script>
+
+</div><!-- /page-wrapper -->
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GAMEHUB – Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/gamehub.css}"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy:   #0d0f1a;
+            --panel:  #13172a;
+            --card:   #1a1f35;
+            --border: #252b45;
+            --accent: #4f6ef7;
+            --accent2:#7c3aed;
+            --text:   #e8eaf6;
+            --muted:  #8b92b0;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            background: var(--navy);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            display: block !important;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.4rem 3rem;
+            background: rgba(0,0,0,.25);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-right { display: flex; align-items: center; gap: 1.2rem; }
+        .navbar-right span { color: var(--muted); font-size: .95rem; }
+
+        .btn-logout {
+            background: transparent;
+            color: #e74c3c;
+            border: 1px solid #e74c3c44;
+            padding: .55rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: .2s;
+        }
+        .btn-logout:hover { background: #e74c3c22; }
+
+        /* ── WELCOME ── */
+        .main-content {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        /* Avatar / icono decorativo */
+        .welcome-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1.2rem;
+        }
+
+        .welcome-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: .5rem;
+        }
+
+        .welcome-card > p { color: var(--muted); margin-bottom: .3rem; font-size: .95rem; }
+
+        .role-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            background: rgba(79,110,247,.18);
+            color: var(--accent);
+            padding: .45rem 1.2rem;
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 700;
+            border: 1px solid rgba(79,110,247,.3);
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .card-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        /* ── PANEL DE ROL ── */
+        .panel-section { text-align: center; }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1.4rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .panel-buttons {
+            display: flex;
+            justify-content: center;
+            gap: .9rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-panel {
+            background: rgba(79,110,247,.12);
+            color: var(--text);
+            border: 1px solid rgba(79,110,247,.25);
+            padding: .85rem 1.5rem;
+            border-radius: 14px;
+            cursor: pointer;
+            min-width: 190px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            font-weight: 500;
+            transition: .2s;
+        }
+        .btn-panel:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79,110,247,.25);
+        }
+
+        .btn-disabled {
+            background: var(--panel);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            cursor: default;
+        }
+        .btn-disabled:hover { background: var(--panel); border-color: var(--border); transform: none; box-shadow: none; }
+
+        /* ── SECCIÓN WRAPPER ── */
+        .section-wrapper {
+            max-width: 1100px;
+            margin: 3rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .section-heading {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+
+        .section-heading::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── NOTICIAS ── */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: .25s;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card:hover { transform: translateY(-5px); border-color: rgba(79,110,247,.3); }
+
+        .news-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .news-image-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .news-content { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+
+        .news-badge {
+            display: inline-block;
+            margin-bottom: .8rem;
+            padding: .3rem .8rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 700;
+            background: rgba(79,110,247,.15);
+            color: var(--accent);
+        }
+
+        .news-badge.promo {
+            background: rgba(245,158,11,.15);
+            color: #f59e0b;
+        }
+
+        .news-content h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            margin-bottom: .6rem;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .news-content p {
+            color: var(--muted);
+            font-size: .9rem;
+            line-height: 1.6;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ── CATÁLOGO ── */
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 1rem 1.2rem;
+            border-radius: 14px;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .search-box input::placeholder { color: var(--muted); }
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,110,247,.15);
+        }
+
+        .search-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.6rem;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            transition: .2s;
+        }
+        .search-btn:hover { opacity: .85; }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: .25s;
+        }
+        .game-card:hover { transform: translateY(-6px); border-color: rgba(79,110,247,.3); }
+
+        .game-image {
+            height: 190px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            overflow: hidden;
+        }
+
+        .game-content { padding: 1.4rem; }
+
+        .genre-badge {
+            display: inline-block;
+            margin-bottom: .8rem;
+            padding: .3rem .8rem;
+            border-radius: 999px;
+            background: rgba(79,110,247,.15);
+            color: var(--accent);
+            font-size: .78rem;
+            font-weight: 600;
+        }
+
+        .game-content h3 {
+            margin-bottom: .5rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .game-content p {
+            color: var(--muted);
+            font-size: .88rem;
+            line-height: 1.6;
+            min-height: 44px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .price { color: var(--accent); font-weight: 700; }
+
+        .btn-details {
+            background: rgba(79,110,247,.12);
+            color: var(--accent);
+            border: 1px solid rgba(79,110,247,.25);
+            border-radius: 10px;
+            padding: .55rem 1rem;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            transition: .2s;
+        }
+        .btn-details:hover { background: var(--accent); color: white; }
+
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            color: var(--muted);
+            padding: 4rem;
+            display: none;
+        }
+
+        .page-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            max-width: 1100px;
+            margin: 3rem auto 0;
+        }
+
+        /* descuento badge */
+        .discount-tag {
+            display: inline-block;
+            background: rgba(239,68,68,.15);
+            color: #ef4444;
+            border: 1px solid rgba(239,68,68,.2);
+            border-radius: 6px;
+            padding: .15rem .5rem;
+            font-size: .78rem;
+            font-weight: 700;
+            margin-bottom: .3rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">GAMEHUB</div>
+    <div class="navbar-right">
+        <span sec:authentication="name"></span>
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button type="submit" class="btn-logout">Cerrar sesión</button>
+        </form>
+		<div class="role-badge">
+
+		    💰 Saldo:
+		    <span id="saldo">
+		        Cargando...
+		    </span>
+
+		</div>
+    </div>
+</div>
+
+<!-- WELCOME CARD -->
+<div class="main-content">
+    <div class="welcome-card">
+
+		<div class="welcome-avatar">
+		    <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+		        <!-- cuerpo del mando -->
+		        <rect x="2" y="8" width="20" height="10" rx="5" ry="5"/>
+		        <!-- cruz direccional -->
+		        <line x1="7" y1="10.5" x2="7" y2="15.5"/>
+		        <line x1="4.5" y1="13" x2="9.5" y2="13"/>
+		        <!-- botones derecha -->
+		        <circle cx="16" cy="11.5" r=".8" fill="white" stroke="none"/>
+		        <circle cx="18.5" cy="13" r=".8" fill="white" stroke="none"/>
+		        <circle cx="16" cy="14.5" r=".8" fill="white" stroke="none"/>
+		        <circle cx="13.5" cy="13" r=".8" fill="white" stroke="none"/>
+		    </svg>
+		</div>
+        <h3>¡Bienvenido a GAMEHUB!</h3>
+        <p>Has iniciado sesión correctamente.</p>
+        <p>Sesión iniciada como: <strong sec:authentication="name"></strong></p>
+        <div class="role-badge">
+            <span id="rolTexto" sec:authentication="authorities"></span>
+        </div>
+
+        <!-- ADMIN -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Administrador</div>
+                <div class="panel-buttons">
+					<button class="btn-panel"
+					        onclick="window.location.href='/usuarios'">
+
+					    👥 Gestionar usuarios
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/juegos'">
+
+					    🎮 Gestionar videojuegos
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/gestion-noticias'">
+
+					    📰 Gestionar noticias
+
+					</button>
+					
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/estadisticas'">
+
+					    📈 Estadísticas
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/reportes'">
+
+					    🚩 Gestionar reportes
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/soporte'">
+
+					    🎫 Gestionar tickets
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/biblioteca'">
+
+					    📚 Mi biblioteca
+
+					</button>
+					
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+
+					<button class="btn-panel"
+					        onclick="window.location.href='/tickets'">
+
+					    🆘 Reportar un problema
+
+					</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESARROLLADOR -->
+        <div sec:authorize="hasRole('DESARROLLADOR')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Desarrollador</div>
+                <div class="panel-buttons">
+                    <button class="btn-panel" onclick="window.location.href='/juegos'">🎮 Mis videojuegos</button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/estadisticas'">
+
+					    📈 Estadísticas
+
+					</button>                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+					<button class="btn-panel"
+					        onclick="window.location.href='/tickets'">
+
+					    🎫 Reportar un problema
+
+					</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- JUGADOR -->
+        <div sec:authorize="hasRole('JUGADOR')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Jugador</div>
+                <div class="panel-buttons">
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODERADOR -->
+        <div sec:authorize="hasRole('MODERADOR')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Moderador</div>
+				<div class="panel-buttons">
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/reportes'">
+
+				        🚩 Gestionar reportes
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/estadisticas'">
+
+				        📈 Estadísticas
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/biblioteca'">
+
+				        📚 Mi biblioteca
+
+				    </button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/tickets'">
+
+				        🎫 Reportar un problema
+
+				    </button>
+
+				</div>
+            </div>
+        </div>
+
+        <!-- SOPORTE -->
+        <div sec:authorize="hasRole('SOPORTE')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Soporte</div>
+				<div class="panel-buttons">
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/soporte'">
+
+				        🎫 Gestionar tickets
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/estadisticas'">
+
+				        📈 Estadísticas
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/biblioteca'">
+
+				        📚 Mi biblioteca
+
+				    </button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/tickets'">
+
+				        🎫 Reportar un problema
+
+				    </button>
+
+				</div>              
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div sec:authorize="hasRole('EDITOR')">
+            <hr class="card-divider"/>
+            <div class="panel-section">
+                <div class="section-title">Panel Editor</div>
+				<div class="panel-buttons">
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/gestion-noticias'">
+
+				        📰 Gestionar noticias
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/estadisticas'">
+
+				        📈 Estadísticas
+
+				    </button>
+
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/biblioteca'">
+
+				        📚 Mi biblioteca
+
+				    </button>
+					<button
+					    class="btn-panel"
+					    onclick="window.location.href='/historial-compras'">
+
+					    📜 Historial de compras
+
+					</button>
+				    <button
+				        class="btn-panel"
+				        onclick="window.location.href='/tickets'">
+
+				        🎫 Reportar un problema
+
+				    </button>
+
+				</div>               
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- NOTICIAS -->
+<div class="section-wrapper" style="margin-top:3.5rem">
+    <div class="section-heading">📰 Noticias y promociones</div>
+    <div id="newsGrid" class="news-grid"></div>
+</div>
+
+<div class="page-divider"></div>
+
+<!-- CATÁLOGO -->
+<div class="section-wrapper" style="margin-bottom:4rem">
+    <div class="section-heading">🕹️ Catálogo de videojuegos</div>
+    <div class="search-box">
+        <input type="text" id="buscarJuego" placeholder="Buscar por título...">
+        <button class="search-btn" onclick="buscarJuegos()">Buscar</button>
+    </div>
+    <div id="sinResultados" class="empty-state">No se encontraron videojuegos</div>
+    <div class="games-grid" id="gamesGrid"></div>
+</div>
+
+<script>
+    const rolElemento = document.getElementById("rolTexto");
+    rolElemento.innerText = rolElemento.innerText
+        .replace("[ROLE_", "")
+        .replace("]", "");
+
+    const formatoCOP = new Intl.NumberFormat('es-CO');
+
+    async function cargarJuegos() {
+        const response = await fetch('/api/juegos/activos');
+        const juegos   = await response.json();
+        renderizarJuegos(juegos);
+    }
+
+    function renderizarJuegos(juegos) {
+        const grid  = document.getElementById('gamesGrid');
+        const empty = document.getElementById('sinResultados');
+        grid.innerHTML = '';
+
+        if (!juegos || juegos.length === 0) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+
+        juegos.forEach(juego => {
+            const descripcion = juego.descripcion || 'Sin descripción';
+            let precioHTML = '';
+
+            if (juego.descuento > 0) {
+                const precioOriginal = juego.precio / (1 - (juego.descuento / 100));
+                precioHTML = `
+                    <div class="price">
+                        <div class="discount-tag">${Math.round(juego.descuento)}% OFF</div>
+                        <div style="text-decoration:line-through;color:var(--muted);font-size:.82rem">
+                            COP $${formatoCOP.format(precioOriginal)}
+                        </div>
+                        <div style="color:var(--accent);font-size:1.05rem;font-weight:800">
+                            COP $${formatoCOP.format(juego.precio)}
+                        </div>
+                    </div>`;
+            } else {
+                precioHTML = `<div class="price">COP $${formatoCOP.format(juego.precio)}</div>`;
+            }
+
+            grid.innerHTML += `
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="${juego.portada || ''}"
+                             alt="${juego.titulo}"
+                             style="width:100%;height:100%;object-fit:cover"
+                             onerror="this.style.display='none'">
+                    </div>
+                    <div class="game-content">
+                        <span class="genre-badge">${juego.genero}</span>
+                        <h3>${juego.titulo}</h3>
+                        <p>${descripcion.substring(0, 80)}</p>
+                        <div class="card-footer">
+                            ${precioHTML}
+                            <button class="btn-details" onclick="verDetalle('${juego.id}')">Ver detalles</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    async function buscarJuegos() {
+        const titulo = document.getElementById('buscarJuego').value;
+        if (!titulo.trim()) { cargarJuegos(); return; }
+        const response = await fetch('/api/juegos/buscar?titulo=' + titulo);
+        const juegos   = await response.json();
+        renderizarJuegos(juegos);
+    }
+
+    function verDetalle(id) { window.location.href = '/juego/' + id; }
+
+    async function cargarNoticias() {
+        const response = await fetch('/api/noticias/activas');
+        const noticias = await response.json();
+        const grid = document.getElementById('newsGrid');
+        grid.innerHTML = '';
+
+        noticias.slice(0, 3).forEach(n => {
+            const imgHtml = n.imagen
+                ? `<img class="news-image" src="${n.imagen}" onerror="this.parentElement.innerHTML='<div class=\\'news-image-placeholder\\'>📰</div>'">`
+                : `<div class="news-image-placeholder">📰</div>`;
+
+            grid.innerHTML += `
+                <div class="news-card">
+                    ${imgHtml}
+                    <div class="news-content">
+                        <span class="news-badge ${n.tipo === 'PROMOCION' ? 'promo' : ''}">
+                            ${n.tipo === 'NOTICIA' ? '🗞️ Noticia' : '🔥 Promoción'}
+                        </span>
+                        <h3>${n.titulo}</h3>
+                        <p>${n.contenido.substring(0, 150)}</p>
+                    </div>
+                </div>`;
+        });
+    }
+
+    cargarNoticias();
+    cargarJuegos();
+	async function cargarSaldo(){
+
+	    const response =
+
+	        await fetch(
+	            '/api/usuarios/saldo'
+	        );
+
+	    const saldo =
+
+	        await response.json();
+
+	    document.getElementById(
+	        'saldo'
+	    ).innerText =
+
+	        'COP $' +
+
+	        new Intl.NumberFormat(
+	            'es-CO'
+	        ).format(saldo);
+	}
+
+	cargarSaldo();
+</script>
+
+</body>
+</html>
+
+

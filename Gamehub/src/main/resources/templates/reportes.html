@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reportes</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --danger:#ef4444;
+            --success:#22c55e;
+            --text:#e8eaf6;
+            --muted:#8b92b0;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--navy);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+        }
+		.navbar{
+
+		    display:flex;
+
+		    justify-content:space-between;
+
+		    align-items:center;
+
+		    padding:1.5rem 3rem;
+
+		    border-bottom:
+		        1px solid var(--border);
+
+		    background:
+		        rgba(0,0,0,.2);
+		}
+
+		.logo{
+
+		    font-family:'Syne';
+
+		    font-size:1.8rem;
+
+		    font-weight:800;
+
+		    background:
+		        linear-gradient(
+		            135deg,
+		            white,
+		            var(--accent)
+		        );
+
+		    -webkit-background-clip:text;
+
+		    -webkit-text-fill-color:
+		        transparent;
+		}
+
+        .container{
+            max-width:1200px;
+            margin:auto;
+            padding:3rem;
+        }
+
+        h1{
+            font-family:'Syne';
+            margin-bottom:2rem;
+        }
+
+        .btn-back{
+            margin-bottom:2rem;
+            border:none;
+            cursor:pointer;
+            border-radius:12px;
+            padding:.9rem 1.4rem;
+            background:var(--accent);
+            color:white;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:var(--card);
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        thead{
+            background:var(--panel);
+        }
+
+        th, td{
+            padding:1rem;
+            text-align:left;
+        }
+
+        tr{
+            border-bottom:1px solid var(--border);
+        }
+
+        .badge{
+
+            padding:.4rem .8rem;
+
+            border-radius:999px;
+
+            background:
+                rgba(239,68,68,.15);
+
+            color:var(--danger);
+        }
+
+        .btn-action{
+
+            border:none;
+            cursor:pointer;
+
+            border-radius:12px;
+
+            padding:.7rem 1rem;
+
+            background:var(--success);
+
+            color:white;
+        }
+		.btn-delete{
+
+		    border:none;
+		    cursor:pointer;
+
+		    border-radius:12px;
+
+		    padding:.7rem 1rem;
+
+		    background:#ef4444;
+
+		    color:white;
+
+		    margin-top:.5rem;
+
+		    min-width:110px;
+
+		    font-weight:700;
+		}
+
+		.btn-delete:hover{
+
+		    opacity:.9;
+		}
+
+    </style>
+
+</head>
+
+<body>
+
+	<div class="navbar">
+
+	    <div class="logo">
+
+	        GAMEHUB
+
+	    </div>
+
+	    <button
+	        class="btn-back"
+	        onclick="window.location.href='/dashboard'">
+
+	        ← Volver
+
+	    </button>
+
+	</div>
+
+	<div class="container">
+    <h1>
+
+        Moderación de comentarios
+
+    </h1>
+
+    <table>
+
+        <thead>
+
+        <tr>
+
+            <th>Reportante</th>
+            <th>Motivo</th>
+            <th>Comentario</th>
+            <th>Estado</th>
+            <th>Acción</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody id="tablaReportes">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+	async function cargarReportes(){
+
+    const response =
+        await fetch(
+            '/api/reportes'
+        );
+
+    const reportes =
+        await response.json();
+
+    const tabla =
+        document.getElementById(
+            'tablaReportes'
+        );
+
+    tabla.innerHTML='';
+
+    if(reportes.length===0){
+
+        tabla.innerHTML=`
+
+            <tr>
+
+                <td colspan="5">
+
+                    No hay reportes pendientes
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+	reportes.forEach(r=>{
+
+	    tabla.innerHTML += `
+
+	        <tr>
+
+	            <td>
+	                ${r.correoReportante}
+	            </td>
+
+	            <td>
+	                ${r.motivo}
+	            </td>
+
+	            <td>
+	                ${r.comentarioTexto ?? 'Comentario eliminado'}
+	            </td>
+
+	            <td>
+
+	                <span class="badge"
+	                    style="
+	                    background:${
+	                        r.revisado
+	                        ? 'rgba(34,197,94,.15)'
+	                        : 'rgba(239,68,68,.15)'
+	                    };
+
+	                    color:${
+	                        r.revisado
+	                        ? '#22c55e'
+	                        : '#ef4444'
+	                    };
+	                ">
+
+	                    ${
+	                        r.revisado
+	                        ? 'Revisado'
+	                        : 'Pendiente'
+	                    }
+
+	                </span>
+
+	            </td>
+
+	            <td>
+
+	                ${
+	                    !r.revisado
+	                    ?
+
+	                    `
+
+	                    <button
+	                        class="btn-action"
+	                        onclick="revisar('${r.id}')">
+
+	                        Revisar
+
+	                    </button>
+
+						<button
+						    class="btn-delete"
+						    onclick="eliminarComentario(
+						        '${r.id}',
+						        '${r.comentarioId}'
+						    )">
+
+						    Eliminar
+
+						</button>
+
+	                    `
+
+	                    :
+
+	                    '—'
+	                }
+
+	            </td>
+
+	        </tr>
+	    `;
+	});
+}
+
+async function revisar(id){
+
+    const confirmar =
+        confirm(
+            '¿Marcar reporte como revisado?'
+        );
+
+    if(!confirmar){
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(
+
+                '/api/reportes/revisar/'
+                + id,
+
+                {
+                    method:'PUT'
+                }
+            );
+
+        if(response.ok){
+
+            alert(
+                'Reporte marcado como revisado'
+            );
+
+            cargarReportes();
+
+        }else{
+
+            alert(
+                'No se pudo revisar'
+            );
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            'Error del servidor'
+        );
+    }
+}
+
+async function eliminarComentario(
+    reporteId,
+    comentarioId
+){
+
+    const confirmar =
+        confirm(
+            '¿Eliminar comentario reportado?'
+        );
+
+    if(!confirmar){
+        return;
+    }
+
+    try{
+
+        // eliminar comentario
+        const eliminarResponse =
+            await fetch(
+
+                '/api/reportes/comentario/'
+                + comentarioId,
+
+                {
+                    method:'DELETE'
+                }
+            );
+
+        if(!eliminarResponse.ok){
+
+            alert(
+                'No se pudo eliminar'
+            );
+
+            return;
+        }
+
+        // marcar revisado
+        await fetch(
+
+            '/api/reportes/revisar/'
+            + reporteId,
+
+            {
+                method:'PUT'
+            }
+        );
+
+        alert(
+            'Comentario eliminado'
+        );
+
+        cargarReportes();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            'Error eliminando comentario'
+        );
+    }
+}
+	
+	cargarReportes();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Mi Biblioteca - GAMEHUB</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root{
+            --navy:#0d0f1a;
+            --panel:#13172a;
+            --card:#1a1f35;
+            --border:#252b45;
+            --accent:#4f6ef7;
+            --accent2:#7c3aed;
+            --text:#e8eaf6;
+            --muted:#8b92b0;
+            --success:#22c55e;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:var(--navy);
+            color:var(--text);
+            font-family:'DM Sans',sans-serif;
+        }
+
+        /* NAVBAR */
+
+        .navbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:1.5rem 3rem;
+            border-bottom:1px solid var(--border);
+            background:rgba(0,0,0,.2);
+        }
+
+        .logo{
+            font-family:'Syne';
+            font-size:1.8rem;
+            font-weight:800;
+
+            background:
+            linear-gradient(
+                135deg,
+                white,
+                var(--accent)
+            );
+
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        }
+
+        .btn-back{
+            border:none;
+            cursor:pointer;
+            border-radius:12px;
+            padding:.85rem 1.4rem;
+            background:var(--accent);
+            color:white;
+            font-weight:600;
+            transition:.2s;
+        }
+
+        .btn-back:hover{
+            transform:translateY(-2px);
+            opacity:.9;
+        }
+
+        /* CONTENIDO */
+
+        .container{
+            padding:3rem;
+            max-width:1400px;
+            margin:auto;
+        }
+
+        .page-header{
+            margin-bottom:2.5rem;
+        }
+
+        h1{
+            font-family:'Syne';
+            font-size:2.3rem;
+            margin-bottom:.5rem;
+        }
+
+        .subtitle{
+            color:var(--muted);
+        }
+
+        .contador{
+            margin-top:1rem;
+            display:inline-block;
+            background:rgba(79,110,247,.12);
+            border:1px solid rgba(79,110,247,.25);
+            color:var(--accent);
+            padding:.5rem 1rem;
+            border-radius:999px;
+            font-size:.9rem;
+            font-weight:600;
+        }
+		.library-tools{
+
+		    display:flex;
+		    gap:1rem;
+		    margin-top:2rem;
+		    flex-wrap:wrap;
+		}
+
+		.library-tools input,
+		.library-tools select{
+
+		    background:var(--panel);
+		    border:1px solid var(--border);
+		    color:var(--text);
+
+		    padding:1rem 1.2rem;
+
+		    border-radius:14px;
+
+		    outline:none;
+
+		    font-family:'DM Sans';
+		}
+
+		.library-tools input{
+
+		    flex:1;
+		    min-width:260px;
+		}
+
+		.library-tools select{
+
+		    min-width:180px;
+		}
+
+        /* GRID */
+
+        .games-grid{
+            display:grid;
+            grid-template-columns:
+                repeat(auto-fit,minmax(300px,1fr));
+
+            gap:2rem;
+        }
+
+        .game-card{
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:24px;
+            overflow:hidden;
+            transition:.25s;
+        }
+
+        .game-card:hover{
+            transform:
+                translateY(-6px);
+        }
+
+        .game-image{
+            height:220px;
+            overflow:hidden;
+            background:var(--panel);
+        }
+
+        .game-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            transition:.35s;
+        }
+
+        .game-card:hover img{
+            transform:scale(1.05);
+        }
+
+        .game-content{
+            padding:1.5rem;
+        }
+
+        .badge{
+            display:inline-block;
+            padding:.35rem .8rem;
+            border-radius:999px;
+            background:
+                rgba(79,110,247,.15);
+
+            color:var(--accent);
+            margin-bottom:1rem;
+            font-size:.85rem;
+        }
+
+        .game-content h3{
+            font-family:'Syne';
+            font-size:1.35rem;
+            margin-bottom:.8rem;
+        }
+
+        .description{
+            color:var(--muted);
+            line-height:1.7;
+            min-height:70px;
+        }
+
+        .card-footer{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-top:1.5rem;
+        }
+
+        .owned-label{
+            color:var(--success);
+            font-weight:700;
+        }
+
+        .btn-details{
+            border:none;
+            cursor:pointer;
+            border-radius:12px;
+            padding:.8rem 1.2rem;
+            background:var(--accent);
+            color:white;
+            font-weight:600;
+            transition:.2s;
+        }
+
+        .btn-details:hover{
+            opacity:.9;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-state{
+            display:none;
+            text-align:center;
+            padding:5rem 2rem;
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:30px;
+        }
+
+        .empty-icon{
+            font-size:5rem;
+            margin-bottom:1rem;
+        }
+
+        .empty-state h2{
+            font-family:'Syne';
+            margin-bottom:1rem;
+        }
+
+        .empty-state p{
+            color:var(--muted);
+            max-width:550px;
+            margin:auto;
+            line-height:1.8;
+        }
+
+        .btn-shop{
+            margin-top:2rem;
+            border:none;
+            cursor:pointer;
+            border-radius:14px;
+            padding:1rem 1.8rem;
+            background:var(--accent);
+            color:white;
+            font-weight:700;
+            transition:.2s;
+        }
+
+        .btn-shop:hover{
+            transform:translateY(-2px);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="logo">
+        GAMEHUB
+    </div>
+
+    <button
+        class="btn-back"
+        onclick="window.location.href='/dashboard'">
+
+        ← Volver
+
+    </button>
+
+</div>
+
+<div class="container">
+
+    <div class="page-header">
+
+        <h1>
+            Mi biblioteca
+        </h1>
+
+        <p class="subtitle">
+
+            Todos los videojuegos
+            adquiridos en tu cuenta.
+
+        </p>
+		<div class="library-tools">
+
+		    <input
+		        type="text"
+		        id="buscarJuego"
+		        placeholder="Buscar en tu biblioteca...">
+
+		    <select id="filtroGenero">
+
+		        <option value="">
+		            Todos los géneros
+		        </option>
+
+		    </select>
+
+		    <select id="ordenar">
+
+		        <option value="recientes">
+		            Más recientes
+		        </option>
+
+		        <option value="az">
+		            Nombre A-Z
+		        </option>
+
+		    </select>
+
+		</div>
+
+        <div
+            id="contadorJuegos"
+            class="contador">
+
+            0 videojuegos
+
+        </div>
+
+    </div>
+
+    <!-- ESTADO VACÍO -->
+
+    <div
+        id="emptyState"
+        class="empty-state">
+
+        <div class="empty-icon">
+            🎮
+        </div>
+
+        <h2>
+            Aún no tienes videojuegos
+        </h2>
+
+        <p>
+
+            Parece que todavía no has
+            adquirido ningún título.
+            Explora el catálogo y empieza
+            tu colección gamer.
+
+        </p>
+
+        <button
+            class="btn-shop"
+            onclick="window.location.href='/dashboard'">
+
+            Ir a comprar videojuegos
+
+        </button>
+
+    </div>
+
+    <!-- GRID -->
+
+    <div
+        class="games-grid"
+        id="gamesGrid">
+
+    </div>
+
+</div>
+
+<script>
+
+let bibliotecaCompleta = [];
+
+async function cargarBiblioteca(){
+
+    const response =
+        await fetch(
+            '/api/compras/juegos'
+        );
+
+    bibliotecaCompleta =
+        await response.json();
+
+    llenarGeneros();
+
+    renderizarBiblioteca(
+        bibliotecaCompleta
+    );
+
+    activarEventos();
+}
+
+function llenarGeneros(){
+
+    const select =
+        document.getElementById(
+            'filtroGenero'
+        );
+
+    const generos =
+        [...new Set(
+
+            bibliotecaCompleta.map(
+                j => j.genero
+            )
+        )];
+
+    generos.forEach(genero=>{
+
+        select.innerHTML += `
+
+            <option value="${genero}">
+
+                ${genero}
+
+            </option>
+
+        `;
+    });
+}
+
+function activarEventos(){
+
+    document.getElementById(
+        'buscarJuego'
+    ).addEventListener(
+        'input',
+        filtrarBiblioteca
+    );
+
+    document.getElementById(
+        'filtroGenero'
+    ).addEventListener(
+        'change',
+        filtrarBiblioteca
+    );
+
+    document.getElementById(
+        'ordenar'
+    ).addEventListener(
+        'change',
+        filtrarBiblioteca
+    );
+}
+
+function filtrarBiblioteca(){
+
+    const texto =
+        document.getElementById(
+            'buscarJuego'
+        )
+        .value
+        .toLowerCase();
+
+    const genero =
+        document.getElementById(
+            'filtroGenero'
+        ).value;
+
+    const orden =
+        document.getElementById(
+            'ordenar'
+        ).value;
+
+    let juegos =
+        [...bibliotecaCompleta];
+
+    // búsqueda
+
+    juegos = juegos.filter(juego =>
+
+        juego.titulo
+            .toLowerCase()
+            .includes(texto)
+    );
+
+    // género
+
+    if(genero){
+
+        juegos =
+            juegos.filter(
+
+                j =>
+                j.genero === genero
+            );
+    }
+
+    // ordenar
+
+    if(orden === 'az'){
+
+        juegos.sort(
+
+            (a,b)=>
+
+            a.titulo.localeCompare(
+                b.titulo
+            )
+        );
+    }
+
+    renderizarBiblioteca(
+        juegos
+    );
+}
+
+function renderizarBiblioteca(
+    juegos
+){
+
+    const grid =
+        document.getElementById(
+            'gamesGrid'
+        );
+
+    const empty =
+        document.getElementById(
+            'emptyState'
+        );
+
+    const contador =
+        document.getElementById(
+            'contadorJuegos'
+        );
+
+    contador.innerText =
+
+        juegos.length
+        + ' videojuego'
+        + (juegos.length !==1
+            ? 's'
+            : '')
+        + ' adquirido'
+        + (juegos.length !==1
+            ? 's'
+            : '');
+
+    grid.innerHTML='';
+
+    if(juegos.length===0){
+
+        empty.style.display =
+            'block';
+
+        empty.innerHTML = `
+
+            <div class="empty-icon">
+
+                🔍
+
+            </div>
+
+            <h2>
+
+                No encontramos videojuegos
+
+            </h2>
+
+            <p>
+
+                Prueba otro nombre
+                o cambia el filtro.
+
+            </p>
+
+            <button
+                class="btn-shop"
+                onclick="
+                    document
+                    .getElementById(
+                        'buscarJuego'
+                    ).value='';
+
+                    document
+                    .getElementById(
+                        'filtroGenero'
+                    ).value='';
+
+                    filtrarBiblioteca();
+                ">
+
+                Limpiar búsqueda
+
+            </button>
+
+        `;
+
+        grid.style.display='none';
+
+        return;
+    }
+
+    grid.style.display='grid';
+    empty.style.display='none';
+
+    juegos.forEach(juego=>{
+
+        grid.innerHTML += `
+
+            <div class="game-card">
+
+                <div class="game-image">
+
+                    <img
+                        src="${
+                            juego.portada
+                            || 'https://via.placeholder.com/400x220?text=GAMEHUB'
+                        }"
+
+                        alt="${juego.titulo}"
+
+                        onerror="
+                            this.src=
+                            'https://via.placeholder.com/400x220?text=GAMEHUB'
+                        ">
+                </div>
+
+                <div class="game-content">
+
+                    <span class="badge">
+
+                        ${juego.genero}
+
+                    </span>
+
+                    <h3>
+
+                        ${juego.titulo}
+
+                    </h3>
+
+                    <p class="description">
+
+                        ${
+                            juego.descripcion
+                            ?.substring(0,100)
+                            || 'Sin descripción'
+                        }
+
+                    </p>
+
+                    <div class="card-footer">
+
+                        <div class="owned-label">
+
+                            ✓ Comprado
+
+                        </div>
+
+                        <button
+                            class="btn-details"
+                            onclick="verDetalle('${juego.id}')">
+
+                            Ver detalles
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+    });
+}
+
+function verDetalle(id){
+
+    window.location.href =
+        '/juego/' + id;
+}
+
+cargarBiblioteca();
+
+</script>
+
+</body>
+</html>
