@@ -2,1065 +2,670 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Videojuegos</title>
-
-    <link rel="stylesheet" href="/css/gamehub.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-          rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMEHUB – Gestión de Videojuegos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        *, *::before, *::after{
-            box-sizing:border-box;
-            margin:0;
-            padding:0;
-        }
-
-        :root{
-            --navy:#0d0f1a;
-            --panel:#13172a;
-            --card:#1a1f35;
-            --border:#252b45;
-            --accent:#4f6ef7;
+        :root {
+            --navy:   #0d0f1a;
+            --panel:  #13172a;
+            --card:   #1a1f35;
+            --border: #252b45;
+            --accent: #4f6ef7;
             --accent2:#7c3aed;
-            --danger:#ef4444;
+            --danger: #ef4444;
             --success:#22c55e;
-            --text:#e8eaf6;
-            --muted:#6b7280;
-            --radius:12px;
+            --text:   #e8eaf6;
+            --muted:  #8b92b0;
+            --radius: 12px;
         }
 
-        body{
-            background:var(--navy);
-            font-family:'DM Sans', sans-serif;
-            color:var(--text);
-            min-height:100vh;
-            padding:2.5rem;
+        /* Reseteo total para anular cualquier CSS externo */
+        html, body {
+            display: block !important;
+            align-items: unset !important;
+            justify-content: unset !important;
+            background: var(--navy) !important;
+            font-family: 'DM Sans', sans-serif !important;
+            color: var(--text) !important;
+            min-height: 100vh;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
-        .page-wrapper{
-            max-width:1200px;
-            margin:0 auto;
+        /* ── NAVBAR ── */
+        .navbar {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+            padding: 1.4rem 3rem;
+            background: rgba(0,0,0,.25);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
         }
 
-        /* TOPBAR */
-
-        .topbar{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:2rem;
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, white, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .topbar h1{
-            font-family:'Syne', sans-serif;
-            font-size:1.9rem;
-            font-weight:800;
-            background:
-                linear-gradient(
-                    135deg,
-                    #fff 30%,
-                    var(--accent)
-                );
+        .btn-back {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: .55rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            transition: .2s;
+        }
+        .btn-back:hover { background: var(--border); }
 
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
+        /* ── PAGE ── */
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem;
         }
 
-        .topbar-buttons{
-            display:flex;
-            gap:.75rem;
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
 
-        /* BUTTONS */
-
-        .btn-primary{
-            background:var(--accent);
-            color:#fff;
-            border:none;
-            padding:.7rem 1.3rem;
-            border-radius:var(--radius);
-            cursor:pointer;
-            font-weight:500;
+        .topbar h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .btn-primary:hover{
-            opacity:.85;
+        /* ── BUTTONS ── */
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: .7rem 1.3rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            transition: .2s;
+        }
+        .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+
+        .btn-edit {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: .35rem .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: .2s;
+        }
+        .btn-edit:hover { background: var(--accent); color: white; }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: .35rem .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: .2s;
+        }
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        .btn-warning {
+            background: transparent;
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+            padding: .35rem .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: .2s;
+        }
+        .btn-warning:hover { background: #f59e0b; color: white; }
+
+        .btn-restore {
+            background: transparent;
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: .35rem .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .82rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: .2s;
+        }
+        .btn-restore:hover { background: var(--success); color: white; }
+
+        /* ── SEARCH ── */
+        .search-row {
+            display: flex;
+            gap: .75rem;
+            margin-bottom: 1.5rem;
         }
 
-        .btn-cancel{
-            background:var(--border);
-            color:var(--text);
-            border:none;
-            padding:.7rem 1.3rem;
-            border-radius:var(--radius);
-            cursor:pointer;
+        .search-row input {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: .85rem 1.1rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .search-row input::placeholder { color: var(--muted); }
+        .search-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,110,247,.15);
         }
 
-        .btn-edit{
-            background:transparent;
-            border:1px solid var(--accent);
-            color:var(--accent);
-            padding:.4rem .8rem;
-            border-radius:8px;
-            cursor:pointer;
-            margin-right:.4rem;
+        /* ── TABLE ── */
+        .table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
         }
 
-        .btn-edit:hover{
-            background:var(--accent);
-            color:white;
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: var(--panel); }
+
+        th {
+            padding: 1rem 1.1rem;
+            text-align: left;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            font-family: 'Syne', sans-serif;
         }
 
-        .btn-delete{
-            background:transparent;
-            border:1px solid var(--danger);
-            color:var(--danger);
-            padding:.4rem .8rem;
-            border-radius:8px;
-            cursor:pointer;
+        td {
+            padding: 1rem 1.1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: middle;
         }
 
-        .btn-delete:hover{
-            background:var(--danger);
-            color:white;
+        tbody tr { transition: background .15s; }
+        tbody tr:hover { background: rgba(79,110,247,.06); }
+
+        /* ── GAME CELL ── */
+        .game-cell { display: flex; gap: 1rem; align-items: center; }
+
+        .game-thumb {
+            width: 54px;
+            height: 72px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--panel);
+            border: 1px solid var(--border);
         }
 
-        /* SEARCH */
-
-        .search-row{
-            display:flex;
-            gap:.75rem;
-            margin-bottom:1.5rem;
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
-        .search-row input{
-            flex:1;
-            background:var(--card);
-            border:1px solid var(--border);
-            color:var(--text);
-            padding:.8rem 1rem;
-            border-radius:var(--radius);
+        .game-info h3 {
+            font-size: .95rem;
+            margin-bottom: .25rem;
+            font-family: 'Syne', sans-serif;
+        }
+        .game-info p {
+            color: var(--muted);
+            font-size: .82rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 260px;
         }
 
-        /* TABLE */
+        /* ── BADGES ── */
+        .badge {
+            display: inline-block;
+            padding: .25rem .7rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        .badge-genero { background: rgba(79,110,247,.12); color: var(--accent);  border-color: rgba(79,110,247,.25); }
+        .badge-on     { background: rgba(34,197,94,.12);  color: var(--success); border-color: rgba(34,197,94,.25);  }
+        .badge-off    { background: rgba(239,68,68,.12);  color: var(--danger);  border-color: rgba(239,68,68,.25);  }
 
-        .table-wrap{
-            background:var(--card);
-            border:1px solid var(--border);
-            border-radius:var(--radius);
-            overflow:hidden;
+        /* ── ACTIONS CELL ── */
+        .actions-cell { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+        /* ── MODAL ── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(4px);
         }
 
-        table{
-            width:100%;
-            border-collapse:collapse;
+        .modal-content {
+            width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: .9rem;
         }
 
-        thead tr{
-            background:var(--panel);
+        .modal-content h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: .3rem;
         }
 
-        th{
-            padding:1rem;
-            text-align:left;
-            font-size:.8rem;
-            text-transform:uppercase;
-            color:var(--muted);
-            font-family:'Syne', sans-serif;
+        /* ── FORM FIELDS ── */
+        .field { display: flex; flex-direction: column; gap: .4rem; }
+
+        .field label {
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
         }
 
-        td{
-            padding:1rem;
-            border-top:1px solid var(--border);
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: .8rem 1rem;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
         }
 
-        tbody tr:hover{
-            background:
-                rgba(79,110,247,.05);
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79,110,247,.15);
         }
 
-        /* GAME CARD CELL */
+        .field input[readonly] { opacity: .6; cursor: not-allowed; }
+        .field textarea { resize: none; height: 90px; }
+        .field select option { background: var(--panel); }
 
-        .game-cell{
-            display:flex;
-            gap:1rem;
-            align-items:center;
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: .75rem;
+            margin-top: .4rem;
         }
 
-		.game-thumb{
-		    width:90px;
-		    height:120px;
-		    border-radius:12px;
-		    overflow:hidden;
-		    flex-shrink:0;
-		    background:var(--panel);
-		}
-
-        .game-info h3{
-            font-size:1rem;
-            margin-bottom:.3rem;
+        .btn-cancel {
+            background: var(--panel);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: .7rem 1.3rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: .2s;
         }
+        .btn-cancel:hover { background: var(--border); color: var(--text); }
 
-        .game-info p{
-            color:var(--muted);
-            font-size:.85rem;
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
         }
-
-        /* BADGES */
-
-        .badge{
-            display:inline-block;
-            padding:.25rem .7rem;
-            border-radius:999px;
-            font-size:.75rem;
-            border:1px solid;
-        }
-
-        .badge-genero{
-            background:
-                rgba(79,110,247,.12);
-
-            color:var(--accent);
-            border-color:
-                rgba(79,110,247,.25);
-        }
-
-        .badge-on{
-            background:
-                rgba(34,197,94,.12);
-
-            color:var(--success);
-            border-color:
-                rgba(34,197,94,.25);
-        }
-
-        .badge-off{
-            background:
-                rgba(239,68,68,.12);
-
-            color:var(--danger);
-            border-color:
-                rgba(239,68,68,.25);
-        }
-
-        /* MODAL */
-
-        .modal{
-            display:none;
-            position:fixed;
-            inset:0;
-            background:
-                rgba(0,0,0,.65);
-
-            justify-content:center;
-            align-items:center;
-            z-index:100;
-        }
-
-        .modal-content{
-            width:450px;
-            background:var(--card);
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:2rem;
-            display:flex;
-            flex-direction:column;
-            gap:1rem;
-        }
-
-        .modal-content h2{
-            font-family:'Syne';
-        }
-
-        .modal-content input,
-        .modal-content textarea,
-        .modal-content select{
-
-            width:100%;
-            background:var(--panel);
-            border:1px solid var(--border);
-            color:var(--text);
-            padding:.8rem 1rem;
-            border-radius:var(--radius);
-        }
-
-        textarea{
-            resize:none;
-            height:90px;
-        }
-
-        .modal-buttons{
-            display:flex;
-            justify-content:flex-end;
-            gap:.75rem;
-        }
-
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state h3 { font-family: 'Syne', sans-serif; color: var(--text); margin-bottom: .5rem; }
     </style>
 </head>
 
 <body>
 
+<!-- NAVBAR — fuera del page-wrapper, ancho completo -->
+<nav class="navbar">
+    <div class="logo">GAMEHUB</div>
+    <button class="btn-back" onclick="window.location.href='/dashboard'">← Volver</button>
+</nav>
+
+<!-- CONTENIDO -->
 <div class="page-wrapper">
 
     <div class="topbar">
-
-        <h1>Gestión de Videojuegos</h1>
-
-        <div class="topbar-buttons">
-
-            <button class="btn-primary"
-                    onclick="abrirModal()">
-
-                + Nuevo videojuego
-            </button>
-
-            <button class="btn-cancel"
-                    onclick="window.location.href='/dashboard'">
-
-                ← Volver
-            </button>
-
-        </div>
+        <h1>🎮 Gestión de Videojuegos</h1>
+        <button class="btn-primary" onclick="abrirModal()">+ Nuevo videojuego</button>
     </div>
 
     <div class="search-row">
-
-        <input id="buscar"
-               placeholder="Buscar videojuego...">
-
-        <button class="btn-primary"
-                onclick="buscarJuegos()">
-
-            Buscar
-        </button>
-
+        <input id="buscar" placeholder="🔍  Buscar por título...">
+        <button class="btn-primary" onclick="buscarJuegos()">Buscar</button>
     </div>
 
     <div class="table-wrap">
-
         <table>
-
             <thead>
-            <tr>
-                <th>Videojuego</th>
-                <th>Género</th>
-                <th>Desarrollador</th>
-                <th>Precio</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
+                <tr>
+                    <th>Videojuego</th>
+                    <th>Género</th>
+                    <th>Desarrollador</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
-
-            <tbody id="tablaJuegos"></tbody>
-
+            <tbody id="tablaJuegos">
+                <tr><td colspan="6">
+                    <div class="empty-state">
+                        <div class="empty-icon">🎮</div>
+                        <h3>Cargando videojuegos...</h3>
+                    </div>
+                </td></tr>
+            </tbody>
         </table>
-
     </div>
 
 </div>
 
-<!-- MODAL -->
-
-<div id="modalJuego"
-     class="modal">
-
+<!-- MODAL VIDEOJUEGO -->
+<div id="modalJuego" class="modal">
     <div class="modal-content">
-
         <h2>Videojuego</h2>
+        <input type="hidden" id="juegoId">
 
-        <input type="hidden"
-               id="juegoId">
-
-        <input id="titulo"
-               placeholder="Título">
-
-        <textarea id="descripcion"
-                  placeholder="Descripción"></textarea>
-
-        <select id="genero">
-
-            <option>Acción</option>
-            <option>Aventura</option>
-            <option>RPG</option>
-            <option>Shooter</option>
-            <option>Estrategia</option>
-            <option>Carreras</option>
-            <option>Deportes</option>
-            <option>Simulación</option>
-            <option>Terror</option>
-            <option>Sandbox</option>
-            <option>MMORPG</option>
-            <option>Battle Royale</option>
-
-        </select>
-
-		<input id="desarrollador"
-		       placeholder="Desarrollador"
-		       th:value="${#authentication.name}"
-			   readonly>
-			   
-        <input id="precio"
-               type="number"
-               placeholder="Precio en COP">
-			   
-			   <input
-			          id="portada"
-			          placeholder="URL de portada del videojuego">
-
-        <div class="modal-buttons">
-
-            <button class="btn-cancel"
-                    onclick="cerrarModal()">
-
-                Cancelar
-            </button>
-
-            <button class="btn-primary"
-                    onclick="guardarJuego()">
-
-                Guardar
-            </button>
-
+        <div class="field">
+            <label>Título</label>
+            <input id="titulo" placeholder="Ej: The Last of Us">
+        </div>
+        <div class="field">
+            <label>Descripción</label>
+            <textarea id="descripcion" placeholder="Descripción breve del juego..."></textarea>
+        </div>
+        <div class="field">
+            <label>Género</label>
+            <select id="genero">
+                <option>Acción</option>
+                <option>Aventura</option>
+                <option>RPG</option>
+                <option>Shooter</option>
+                <option>Estrategia</option>
+                <option>Carreras</option>
+                <option>Deportes</option>
+                <option>Simulación</option>
+                <option>Terror</option>
+                <option>Sandbox</option>
+                <option>MMORPG</option>
+                <option>Battle Royale</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Desarrollador</label>
+            <input id="desarrollador" placeholder="Nombre del desarrollador" readonly>
+        </div>
+        <div class="field">
+            <label>Precio (COP)</label>
+            <input id="precio" type="number" placeholder="Ej: 120000">
+        </div>
+        <div class="field">
+            <label>URL de portada</label>
+            <input id="portada" placeholder="https://...">
         </div>
 
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarJuego()">Guardar</button>
+        </div>
     </div>
-
 </div>
 
 <!-- MODAL DESCUENTO -->
-
-<div id="modalDescuento"
-     class="modal">
-
+<div id="modalDescuento" class="modal">
     <div class="modal-content">
+        <h2>💸 Aplicar descuento</h2>
+        <input type="hidden" id="descuentoJuegoId">
 
-        <h2>
-            Aplicar descuento
-        </h2>
-
-        <input
-                type="hidden"
-                id="descuentoJuegoId">
-
-        <label>
-            Tipo de descuento
-        </label>
-
-        <select id="tipoDescuento">
-
-            <option value="porcentaje">
-
-                Porcentaje (%)
-
-            </option>
-
-            <option value="precio">
-
-                Precio final
-
-            </option>
-
-        </select>
-
-        <input
-                type="number"
-                id="valorDescuento"
-                placeholder="Ingrese valor">
-
-        <div class="modal-buttons">
-
-            <button
-                    class="btn-cancel"
-                    onclick="cerrarModalDescuento()">
-
-                Cancelar
-
-            </button>
-
-            <button
-                    class="btn-primary"
-                    onclick="guardarDescuento()">
-
-                Guardar
-
-            </button>
-
+        <div class="field">
+            <label>Tipo de descuento</label>
+            <select id="tipoDescuento">
+                <option value="porcentaje">Porcentaje (%)</option>
+                <option value="precio">Precio final</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Valor</label>
+            <input type="number" id="valorDescuento" placeholder="Ingrese valor">
         </div>
 
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="cerrarModalDescuento()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarDescuento()">Aplicar</button>
+        </div>
     </div>
-
 </div>
 
 <script>
-
-const formatoCOP =
-    new Intl.NumberFormat(
-        'es-CO'
-    );
-	
-	// =====================
-	// DESCUENTOS
-	// =====================
-
-	let precioOriginal = 0;
-
-	function abrirModalDescuento(
-	    id,
-	    precio
-	){
-
-	    document.getElementById(
-	        'descuentoJuegoId'
-	    ).value = id;
-
-	    precioOriginal = precio;
-
-	    document.getElementById(
-	        'valorDescuento'
-	    ).value = '';
-
-	    document.getElementById(
-	        'modalDescuento'
-	    ).style.display = 'flex';
-	}
-
-	function cerrarModalDescuento(){
-
-	    document.getElementById(
-	        'modalDescuento'
-	    ).style.display = 'none';
-	}
-
-	async function guardarDescuento(){
-
-	    const id =
-	        document.getElementById(
-	            'descuentoJuegoId'
-	        ).value;
-
-	    const tipo =
-	        document.getElementById(
-	            'tipoDescuento'
-	        ).value;
-
-	    const valor =
-	        parseFloat(
-	            document.getElementById(
-	                'valorDescuento'
-	            ).value
-	        );
-
-	    if(!valor || valor <= 0){
-
-	        alert(
-	            'Ingrese un valor válido'
-	        );
-
-	        return;
-	    }
-
-	    let nuevoPrecio;
-	    let descuento = 0;
-
-	    if(tipo === 'porcentaje'){
-
-	        descuento = valor;
-
-	        nuevoPrecio =
-	            precioOriginal -
-	            (
-	                precioOriginal *
-	                (valor / 100)
-	            );
-
-	    }else{
-
-	        nuevoPrecio = valor;
-
-	        descuento =
-	            (
-	                (
-	                    precioOriginal -
-	                    valor
-	                )
-	                / precioOriginal
-	            ) * 100;
-	    }
-
-	    try{
-
-	        const response =
-	            await fetch(
-
-	                `/api/juegos/${id}/descuento`,
-
-	                {
-
-	                    method:'PATCH',
-
-	                    headers:{
-	                        'Content-Type':
-	                            'application/json'
-	                    },
-
-	                    body:JSON.stringify({
-
-	                        precio:
-	                            nuevoPrecio,
-
-	                        descuento:
-	                            Math.round(
-	                                descuento
-	                            )
-
-	                    })
-
-	                }
-
-	            );
-
-	        if(response.ok){
-
-	            alert(
-	                'Descuento aplicado'
-	            );
-
-	            cerrarModalDescuento();
-
-	            cargarJuegos();
-
-	        }else{
-
-	            alert(
-	                'No se pudo aplicar'
-	            );
-	        }
-
-	    }catch(error){
-
-	        console.error(error);
-
-	        alert(
-	            'Error del servidor'
-	        );
-	    }
-	}
-
-async function cargarJuegos(){
-
-    const response =
-        await fetch('/api/juegos');
-
-    const juegos =
-        await response.json();
-
-    pintarTabla(juegos);
-}
-
-function pintarTabla(juegos){
-
-    const tabla =
-        document.getElementById(
-            'tablaJuegos'
-        );
-
-    tabla.innerHTML='';
-
-    juegos.forEach(juego=>{
-
-        tabla.innerHTML += `
-
-        <tr>
-
-            <td>
-
-                <div class="game-cell">
-
-					<div class="game-thumb">
-
-					    <img
-					        src="${
-					            juego.portada ||
-					            'https://via.placeholder.com/120x160?text=GAMEHUB'
-					        }"
-
-					        alt="${juego.titulo}"
-
-					        style="
-					            width:100%;
-					            height:100%;
-					            object-fit:cover;
-					            border-radius:12px;
-					        ">
-
-					</div>
-
-                    <div class="game-info">
-
-                        <h3>
-                            ${juego.titulo}
-                        </h3>
-
-                        <p>
-                            ${juego.descripcion ?? ''}
-                        </p>
-
+    const formatoCOP = new Intl.NumberFormat('es-CO');
+    let precioOriginal = 0;
+
+    function abrirModalDescuento(id, precio) {
+        document.getElementById('descuentoJuegoId').value = id;
+        precioOriginal = precio;
+        document.getElementById('valorDescuento').value = '';
+        document.getElementById('modalDescuento').style.display = 'flex';
+    }
+
+    function cerrarModalDescuento() {
+        document.getElementById('modalDescuento').style.display = 'none';
+    }
+
+    async function guardarDescuento() {
+        const id    = document.getElementById('descuentoJuegoId').value;
+        const tipo  = document.getElementById('tipoDescuento').value;
+        const valor = parseFloat(document.getElementById('valorDescuento').value);
+
+        if (!valor || valor <= 0) { alert('Ingrese un valor válido'); return; }
+
+        let nuevoPrecio, descuento;
+        if (tipo === 'porcentaje') {
+            descuento   = valor;
+            nuevoPrecio = precioOriginal - (precioOriginal * (valor / 100));
+        } else {
+            nuevoPrecio = valor;
+            descuento   = ((precioOriginal - valor) / precioOriginal) * 100;
+        }
+
+        try {
+            const response = await fetch(`/api/juegos/${id}/descuento`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ precio: nuevoPrecio, descuento: Math.round(descuento) })
+            });
+            if (response.ok) { alert('Descuento aplicado'); cerrarModalDescuento(); cargarJuegos(); }
+            else alert('No se pudo aplicar');
+        } catch (e) { console.error(e); alert('Error del servidor'); }
+    }
+
+    async function cargarJuegos() {
+        const response = await fetch('/api/juegos');
+        const juegos   = await response.json();
+        pintarTabla(juegos);
+    }
+
+    function pintarTabla(juegos) {
+        const tabla = document.getElementById('tablaJuegos');
+        tabla.innerHTML = '';
+
+        if (!juegos || juegos.length === 0) {
+            tabla.innerHTML = `<tr><td colspan="6">
+                <div class="empty-state">
+                    <div class="empty-icon">🕹️</div>
+                    <h3>No hay videojuegos registrados</h3>
+                    <p>Crea el primero con el botón "Nuevo videojuego"</p>
+                </div></td></tr>`;
+            return;
+        }
+
+        juegos.forEach(juego => {
+            tabla.innerHTML += `
+            <tr>
+                <td>
+                    <div class="game-cell">
+                        <div class="game-thumb">
+                            <img src="${juego.portada || ''}" alt="${juego.titulo}"
+                                 onerror="this.parentElement.style.background='var(--panel)'">
+                        </div>
+                        <div class="game-info">
+                            <h3>${juego.titulo}</h3>
+                            <p>${juego.descripcion ?? ''}</p>
+                        </div>
                     </div>
+                </td>
+                <td><span class="badge badge-genero">${juego.genero}</span></td>
+                <td style="color:var(--muted);font-size:.9rem">${juego.desarrollador ?? 'N/A'}</td>
+                <td style="font-weight:600">COP $${formatoCOP.format(juego.precio)}</td>
+                <td><span class="badge ${juego.activo ? 'badge-on' : 'badge-off'}">${juego.activo ? 'Activo' : 'Suspendido'}</span></td>
+                <td>
+                    <div class="actions-cell">
+                        <button class="btn-edit"    onclick="editarJuego('${juego.id}')">✏️ Editar</button>
+                        <button class="btn-warning" onclick="abrirModalDescuento('${juego.id}', ${juego.precio})">💸 Descuento</button>
+                        <button class="btn-restore" onclick="restaurarPrecio('${juego.id}')">↩ Restaurar</button>
+                        <button class="btn-edit"    onclick="cambiarEstado('${juego.id}', ${!juego.activo})">${juego.activo ? '⏸ Suspender' : '▶ Activar'}</button>
+                        <button class="btn-delete"  onclick="eliminarJuego('${juego.id}')">🗑 Eliminar</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+    }
 
-                </div>
+    function abrirModal() {
+        document.getElementById('juegoId').value     = '';
+        document.getElementById('titulo').value      = '';
+        document.getElementById('descripcion').value = '';
+        document.getElementById('precio').value      = '';
+        document.getElementById('portada').value     = '';
+        document.getElementById('modalJuego').style.display = 'flex';
+    }
 
-            </td>
+    function cerrarModal() {
+        document.getElementById('modalJuego').style.display = 'none';
+    }
 
-            <td>
+    async function guardarJuego() {
+        const id   = document.getElementById('juegoId').value;
+        const body = {
+            titulo:        document.getElementById('titulo').value,
+            descripcion:   document.getElementById('descripcion').value,
+            genero:        document.getElementById('genero').value,
+            desarrollador: document.getElementById('desarrollador').value,
+            precio:        parseFloat(document.getElementById('precio').value),
+            portada:       document.getElementById('portada').value
+        };
 
-                <span class="badge badge-genero">
+        await fetch(id ? '/api/juegos/' + id : '/api/juegos', {
+            method:  id ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(body)
+        });
 
-                    ${juego.genero}
+        cerrarModal();
+        cargarJuegos();
+    }
 
-                </span>
+    async function editarJuego(id) {
+        const response = await fetch('/api/juegos/' + id);
+        const juego    = await response.json();
 
-            </td>
+        document.getElementById('juegoId').value       = juego.id;
+        document.getElementById('titulo').value        = juego.titulo;
+        document.getElementById('descripcion').value   = juego.descripcion;
+        document.getElementById('genero').value        = juego.genero;
+        document.getElementById('desarrollador').value = juego.desarrollador;
+        document.getElementById('precio').value        = juego.precio;
+        document.getElementById('portada').value       = juego.portada ?? '';
 
-            <td>
-                ${juego.desarrollador ?? 'N/A'}
-            </td>
+        abrirModal();
+    }
 
-            <td>
+    async function eliminarJuego(id) {
+        if (!confirm('¿Seguro que deseas eliminar este videojuego?')) return;
+        try {
+            const response = await fetch('/api/juegos/' + id, { method: 'DELETE' });
+            alert(response.ok ? 'Videojuego eliminado' : 'No se pudo eliminar');
+            if (response.ok) cargarJuegos();
+        } catch (e) { console.error(e); alert('Error eliminando videojuego'); }
+    }
 
-                COP $
-                ${formatoCOP.format(juego.precio)}
+    async function cambiarEstado(id, estado) {
+        try {
+            const response = await fetch(`/api/juegos/${id}/estado?activo=${estado}`, { method: 'PATCH' });
+            if (response.ok) { alert(estado ? 'Videojuego activado' : 'Videojuego suspendido'); cargarJuegos(); }
+            else alert('No se pudo cambiar el estado');
+        } catch (e) { console.error(e); alert('Error del servidor'); }
+    }
 
-            </td>
+    async function restaurarPrecio(id) {
+        if (!confirm('¿Volver al precio original?')) return;
+        const response = await fetch('/api/juegos/' + id + '/restaurar-precio', { method: 'PATCH' });
+        alert(response.ok ? 'Precio restaurado' : 'No se pudo restaurar');
+        if (response.ok) cargarJuegos();
+    }
 
-            <td>
-
-                <span class="badge
-                ${juego.activo
-                ? 'badge-on'
-                : 'badge-off'}">
-
-                ${juego.activo
-                ? 'Activo'
-                : 'Suspendido'}
-
-                </span>
-
-            </td>
-
-			<td>
-
-			    <button
-			        class="btn-edit"
-			        onclick="editarJuego('${juego.id}')">
-
-			        Editar
-
-			    </button>
-
-			    <button
-			        class="btn-edit"
-			        onclick="abrirModalDescuento(
-			            '${juego.id}',
-			            ${juego.precio}
-			        )">
-
-			        Descuento
-
-			    </button>
-				
-				<button
-				    class="btn-edit"
-				    onclick="restaurarPrecio('${juego.id}')">
-
-				    Restaurar precio
-
-				</button>
-
-			    <button
-			        class="btn-edit"
-			        onclick="cambiarEstado(
-			        '${juego.id}',
-			        ${!juego.activo})">
-
-			        ${juego.activo
-			        ? 'Suspender'
-			        : 'Activar'}
-
-			    </button>
-
-			    <button
-			        class="btn-delete"
-			        onclick="eliminarJuego('${juego.id}')">
-
-			        Eliminar
-
-			    </button>
-
-			</td>
-
-        </tr>
-        `;
-    });
-}
-
-function abrirModal(){
-
-    document.getElementById(
-        'modalJuego'
-    ).style.display='flex';
-}
-
-function cerrarModal(){
-
-    document.getElementById(
-        'modalJuego'
-    ).style.display='none';
-}
-
-async function guardarJuego(){
-
-    const id =
-        document.getElementById(
-            'juegoId'
-        ).value;
-
-    const body = {
-
-        titulo:
-            document.getElementById(
-                'titulo'
-            ).value,
-
-        descripcion:
-            document.getElementById(
-                'descripcion'
-            ).value,
-
-        genero:
-            document.getElementById(
-                'genero'
-            ).value,
-
-        desarrollador:
-            document.getElementById(
-                'desarrollador'
-            ).value,
-
-			precio:
-			    parseFloat(
-			        document.getElementById(
-			            'precio'
-			        ).value
-			    ),
-
-			portada:
-			    document.getElementById(
-			        'portada'
-			    ).value
-    };
-
-    const url =
-        id
-        ? '/api/juegos/' + id
-        : '/api/juegos';
-
-    const method =
-        id ? 'PUT' : 'POST';
-
-    await fetch(url,{
-
-        method,
-
-        headers:{
-            'Content-Type':
-                'application/json'
-        },
-
-        body:
-            JSON.stringify(body)
-    });
-
-    cerrarModal();
+    async function buscarJuegos() {
+        const titulo   = document.getElementById('buscar').value;
+        const response = await fetch('/api/juegos/buscar?titulo=' + titulo);
+        const juegos   = await response.json();
+        pintarTabla(juegos);
+    }
 
     cargarJuegos();
-}
-
-async function editarJuego(id){
-
-    const response =
-        await fetch('/api/juegos/'+id);
-
-    const juego =
-        await response.json();
-
-    document.getElementById(
-        'juegoId'
-    ).value=juego.id;
-
-    document.getElementById(
-        'titulo'
-    ).value=juego.titulo;
-
-    document.getElementById(
-        'descripcion'
-    ).value=juego.descripcion;
-
-    document.getElementById(
-        'genero'
-    ).value=juego.genero;
-
-    document.getElementById(
-        'desarrollador'
-    ).value=juego.desarrollador;
-
-    document.getElementById(
-        'precio'
-    ).value=juego.precio;
-	document.getElementById(
-	    'portada'
-	).value =
-	    juego.portada ?? '';
-
-    abrirModal();
-}
-
-async function eliminarJuego(id){
-
-    const confirmar = confirm(
-        '¿Seguro que deseas eliminar este videojuego?'
-    );
-
-    if(!confirmar){
-        return;
-    }
-
-    try{
-
-        const response = await fetch(
-
-            '/api/juegos/' + id,
-
-            {
-                method:'DELETE'
-            }
-        );
-
-        if(response.ok){
-
-            alert('Videojuego eliminado');
-
-            cargarJuegos();
-
-        }else{
-
-            alert('No se pudo eliminar');
-
-        }
-
-    }catch(error){
-
-        console.error(error);
-
-        alert('Error eliminando videojuego');
-
-    }
-}
-
-async function cambiarEstado(
-    id,
-    estado
-){
-    try{
-        const response = await fetch(
-            `/api/juegos/${id}/estado?activo=${estado}`,
-            {
-               method:'PATCH'
-            }
-        );
-        if(response.ok){
-            alert(
-                estado
-                ? 'Videojuego activado'
-                : 'Videojuego suspendido'
-            );
-            cargarJuegos();
-        }else{
-            alert(
-                'No se pudo cambiar el estado'
-            );
-        }
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            'Error del servidor'
-        );
-    }
-}
-
-async function restaurarPrecio(id){
-
-    const confirmar = confirm(
-        '¿Volver al precio original?'
-    );
-
-    if(!confirmar){
-        return;
-    }
-
-    const response =
-        await fetch(
-
-            '/api/juegos/'
-            + id
-            + '/restaurar-precio',
-
-            {
-                method:'PATCH'
-            }
-        );
-
-    if(response.ok){
-
-        alert(
-            'Precio restaurado'
-        );
-
-        cargarJuegos();
-
-    }else{
-
-        alert(
-            'No se pudo restaurar'
-        );
-    }
-}
-
-async function buscarJuegos(){
-
-    const titulo =
-        document.getElementById(
-            'buscar'
-        ).value;
-
-    const response =
-        await fetch(
-            '/api/juegos/buscar?titulo='
-            + titulo
-        );
-
-    const juegos =
-        await response.json();
-
-    pintarTabla(juegos);
-}
-
-cargarJuegos();
-
 </script>
 
 </body>

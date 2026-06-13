@@ -55,7 +55,7 @@
         }
 
         .navbar-right { display: flex; align-items: center; gap: 1.2rem; }
-        .navbar-right span { color: var(--muted); font-size: .95rem; }
+        .navbar-right > span { color: var(--muted); font-size: .95rem; }
 
         .btn-logout {
             background: transparent;
@@ -69,6 +69,35 @@
             transition: .2s;
         }
         .btn-logout:hover { background: #e74c3c22; }
+
+        /* ── SALDO CHIP ── */
+        .saldo-chip {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(74,222,128,.08);
+            border: 1px solid rgba(74,222,128,.22);
+            border-radius: 999px;
+            padding: .45rem 1.1rem;
+            font-size: .9rem;
+            white-space: nowrap;
+        }
+
+        .saldo-icon { font-size: 1rem; }
+
+        .saldo-label {
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .saldo-valor {
+            color: #4ade80;
+            font-weight: 700;
+            font-size: .95rem;
+        }
 
         /* ── WELCOME ── */
         .main-content {
@@ -85,7 +114,7 @@
             text-align: center;
         }
 
-        /* Avatar / icono decorativo */
+        /* ── AVATAR CON PULSO ── */
         .welcome-avatar {
             width: 64px;
             height: 64px;
@@ -96,6 +125,15 @@
             justify-content: center;
             font-size: 1.8rem;
             margin: 0 auto 1.2rem;
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(79,110,247,.45); }
+            50%       { box-shadow: 0 0 0 12px rgba(79,110,247,.0); }
+        }
+
+        .avatar-pulse {
+            animation: avatarPulse 2.8s ease-in-out infinite;
         }
 
         .welcome-card h3 {
@@ -149,6 +187,12 @@
         }
 
         .btn-panel {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            line-height: 1.3;
+            white-space: nowrap;
             background: rgba(79,110,247,.12);
             color: var(--text);
             border: 1px solid rgba(79,110,247,.25);
@@ -179,7 +223,7 @@
         /* ── SECCIÓN WRAPPER ── */
         .section-wrapper {
             max-width: 1100px;
-            margin: 3rem auto 0;
+            margin: 4rem auto 0;
             padding: 0 2rem;
         }
 
@@ -187,17 +231,12 @@
             font-family: 'Syne', sans-serif;
             font-size: 1.6rem;
             font-weight: 800;
-            margin-bottom: 1.8rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: .7rem;
-        }
-
-        .section-heading::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
         }
 
         /* ── NOTICIAS ── */
@@ -405,7 +444,6 @@
             margin: 3rem auto 0;
         }
 
-        /* descuento badge */
         .discount-tag {
             display: inline-block;
             background: rgba(239,68,68,.15);
@@ -427,17 +465,17 @@
     <div class="logo">GAMEHUB</div>
     <div class="navbar-right">
         <span sec:authentication="name"></span>
+
+        <!-- Saldo chip mejorado -->
+        <div class="saldo-chip">
+            <span class="saldo-icon">💰</span>
+            <span class="saldo-label">Saldo</span>
+            <span id="saldo" class="saldo-valor">Cargando...</span>
+        </div>
+
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button type="submit" class="btn-logout">Cerrar sesión</button>
         </form>
-		<div class="role-badge">
-
-		    💰 Saldo:
-		    <span id="saldo">
-		        Cargando...
-		    </span>
-
-		</div>
     </div>
 </div>
 
@@ -445,20 +483,19 @@
 <div class="main-content">
     <div class="welcome-card">
 
-		<div class="welcome-avatar">
-		    <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-		        <!-- cuerpo del mando -->
-		        <rect x="2" y="8" width="20" height="10" rx="5" ry="5"/>
-		        <!-- cruz direccional -->
-		        <line x1="7" y1="10.5" x2="7" y2="15.5"/>
-		        <line x1="4.5" y1="13" x2="9.5" y2="13"/>
-		        <!-- botones derecha -->
-		        <circle cx="16" cy="11.5" r=".8" fill="white" stroke="none"/>
-		        <circle cx="18.5" cy="13" r=".8" fill="white" stroke="none"/>
-		        <circle cx="16" cy="14.5" r=".8" fill="white" stroke="none"/>
-		        <circle cx="13.5" cy="13" r=".8" fill="white" stroke="none"/>
-		    </svg>
-		</div>
+        <!-- Avatar con pulso -->
+        <div class="welcome-avatar avatar-pulse">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="8" width="20" height="10" rx="5" ry="5"/>
+                <line x1="7" y1="10.5" x2="7" y2="15.5"/>
+                <line x1="4.5" y1="13" x2="9.5" y2="13"/>
+                <circle cx="16" cy="11.5" r=".8" fill="white" stroke="none"/>
+                <circle cx="18.5" cy="13" r=".8" fill="white" stroke="none"/>
+                <circle cx="16" cy="14.5" r=".8" fill="white" stroke="none"/>
+                <circle cx="13.5" cy="13" r=".8" fill="white" stroke="none"/>
+            </svg>
+        </div>
+
         <h3>¡Bienvenido a GAMEHUB!</h3>
         <p>Has iniciado sesión correctamente.</p>
         <p>Sesión iniciada como: <strong sec:authentication="name"></strong></p>
@@ -472,70 +509,15 @@
             <div class="panel-section">
                 <div class="section-title">Panel Administrador</div>
                 <div class="panel-buttons">
-					<button class="btn-panel"
-					        onclick="window.location.href='/usuarios'">
-
-					    👥 Gestionar usuarios
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/juegos'">
-
-					    🎮 Gestionar videojuegos
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/gestion-noticias'">
-
-					    📰 Gestionar noticias
-
-					</button>
-					
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/estadisticas'">
-
-					    📈 Estadísticas
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/reportes'">
-
-					    🚩 Gestionar reportes
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/soporte'">
-
-					    🎫 Gestionar tickets
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/biblioteca'">
-
-					    📚 Mi biblioteca
-
-					</button>
-					
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
-
-					<button class="btn-panel"
-					        onclick="window.location.href='/tickets'">
-
-					    🆘 Reportar un problema
-
-					</button>
+                    <button class="btn-panel" onclick="window.location.href='/usuarios'">👥 Gestionar usuarios</button>
+                    <button class="btn-panel" onclick="window.location.href='/juegos'">🎮 Gestionar videojuegos</button>
+                    <button class="btn-panel" onclick="window.location.href='/gestion-noticias'">📰 Gestionar noticias</button>
+                    <button class="btn-panel" onclick="window.location.href='/estadisticas'">📈 Estadísticas</button>
+                    <button class="btn-panel" onclick="window.location.href='/reportes'">🚩 Gestionar reportes</button>
+                    <button class="btn-panel" onclick="window.location.href='/soporte'">🎫 Gestionar tickets</button>
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🆘 Reportar un problema</button>
                 </div>
             </div>
         </div>
@@ -547,26 +529,10 @@
                 <div class="section-title">Panel Desarrollador</div>
                 <div class="panel-buttons">
                     <button class="btn-panel" onclick="window.location.href='/juegos'">🎮 Mis videojuegos</button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/estadisticas'">
-
-					    📈 Estadísticas
-
-					</button>                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
-					<button class="btn-panel"
-					        onclick="window.location.href='/tickets'">
-
-					    🎫 Reportar un problema
-
-					</button>
+                    <button class="btn-panel" onclick="window.location.href='/estadisticas'">📈 Estadísticas</button>
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
                 </div>
             </div>
         </div>
@@ -578,13 +544,7 @@
                 <div class="section-title">Panel Jugador</div>
                 <div class="panel-buttons">
                     <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
                     <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
                 </div>
             </div>
@@ -595,47 +555,13 @@
             <hr class="card-divider"/>
             <div class="panel-section">
                 <div class="section-title">Panel Moderador</div>
-				<div class="panel-buttons">
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/reportes'">
-
-				        🚩 Gestionar reportes
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/estadisticas'">
-
-				        📈 Estadísticas
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/biblioteca'">
-
-				        📚 Mi biblioteca
-
-				    </button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/tickets'">
-
-				        🎫 Reportar un problema
-
-				    </button>
-
-				</div>
+                <div class="panel-buttons">
+                    <button class="btn-panel" onclick="window.location.href='/reportes'">🚩 Gestionar reportes</button>
+                    <button class="btn-panel" onclick="window.location.href='/estadisticas'">📈 Estadísticas</button>
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
+                </div>
             </div>
         </div>
 
@@ -644,47 +570,13 @@
             <hr class="card-divider"/>
             <div class="panel-section">
                 <div class="section-title">Panel Soporte</div>
-				<div class="panel-buttons">
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/soporte'">
-
-				        🎫 Gestionar tickets
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/estadisticas'">
-
-				        📈 Estadísticas
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/biblioteca'">
-
-				        📚 Mi biblioteca
-
-				    </button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/tickets'">
-
-				        🎫 Reportar un problema
-
-				    </button>
-
-				</div>              
+                <div class="panel-buttons">
+                    <button class="btn-panel" onclick="window.location.href='/soporte'">🎫 Gestionar tickets</button>
+                    <button class="btn-panel" onclick="window.location.href='/estadisticas'">📈 Estadísticas</button>
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
+                </div>
             </div>
         </div>
 
@@ -693,47 +585,13 @@
             <hr class="card-divider"/>
             <div class="panel-section">
                 <div class="section-title">Panel Editor</div>
-				<div class="panel-buttons">
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/gestion-noticias'">
-
-				        📰 Gestionar noticias
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/estadisticas'">
-
-				        📈 Estadísticas
-
-				    </button>
-
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/biblioteca'">
-
-				        📚 Mi biblioteca
-
-				    </button>
-					<button
-					    class="btn-panel"
-					    onclick="window.location.href='/historial-compras'">
-
-					    📜 Historial de compras
-
-					</button>
-				    <button
-				        class="btn-panel"
-				        onclick="window.location.href='/tickets'">
-
-				        🎫 Reportar un problema
-
-				    </button>
-
-				</div>               
+                <div class="panel-buttons">
+                    <button class="btn-panel" onclick="window.location.href='/gestion-noticias'">📰 Gestionar noticias</button>
+                    <button class="btn-panel" onclick="window.location.href='/estadisticas'">📈 Estadísticas</button>
+                    <button class="btn-panel" onclick="window.location.href='/biblioteca'">📚 Mi biblioteca</button>
+                    <button class="btn-panel" onclick="window.location.href='/historial-compras'">📜 Historial de compras</button>
+                    <button class="btn-panel" onclick="window.location.href='/tickets'">🎫 Reportar un problema</button>
+                </div>
             </div>
         </div>
 
@@ -741,7 +599,7 @@
 </div>
 
 <!-- NOTICIAS -->
-<div class="section-wrapper" style="margin-top:3.5rem">
+<div class="section-wrapper" style="margin-top:4rem">
     <div class="section-heading">📰 Noticias y promociones</div>
     <div id="newsGrid" class="news-grid"></div>
 </div>
@@ -857,35 +715,17 @@
         });
     }
 
+    async function cargarSaldo() {
+        const response = await fetch('/api/usuarios/saldo');
+        const saldo = await response.json();
+        document.getElementById('saldo').innerText =
+            'COP $' + new Intl.NumberFormat('es-CO').format(saldo);
+    }
+
     cargarNoticias();
     cargarJuegos();
-	async function cargarSaldo(){
-
-	    const response =
-
-	        await fetch(
-	            '/api/usuarios/saldo'
-	        );
-
-	    const saldo =
-
-	        await response.json();
-
-	    document.getElementById(
-	        'saldo'
-	    ).innerText =
-
-	        'COP $' +
-
-	        new Intl.NumberFormat(
-	            'es-CO'
-	        ).format(saldo);
-	}
-
-	cargarSaldo();
+    cargarSaldo();
 </script>
 
 </body>
 </html>
-
-
